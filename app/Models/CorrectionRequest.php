@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\ApprovalStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,8 +27,7 @@ class CorrectionRequest extends Model
         'requested_clock_in_at' => 'datetime',
         'requested_clock_out_at' => 'datetime',
         'approved_at' => 'datetime',
-        'application_date' => 'datetime',
-        'approval_status' => ApprovalStatus::class,
+        'application_date' => 'date',
     ];
 
     /**
@@ -49,7 +47,7 @@ class CorrectionRequest extends Model
     }
 
     /**
-     * 申請を承認した管理者ユーザー
+     * 修正申請を承認した管理者ユーザー
      */
     public function approver(): BelongsTo
     {
@@ -57,7 +55,7 @@ class CorrectionRequest extends Model
     }
 
     /**
-     * 修正対象の休憩情報
+     * 修正申請に含まれる休憩時間
      */
     public function breakTimes(): HasMany
     {

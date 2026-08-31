@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('requested_clock_in_at')->nullable();
             $table->timestamp('requested_clock_out_at')->nullable();
             $table->text('comment');
-            $table->string('approval_status')->default('pending');
+            $table->string('approval_status')->default('承認待ち');
             $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('application_date');
