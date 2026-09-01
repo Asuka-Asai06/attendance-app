@@ -12,7 +12,7 @@ Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login
 Route::middleware(['auth'])->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
-    // Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance');
+    Route::get('/attendance/list', [AttendanceController::class, 'attendanceList'])->name('attendance.list');
     // Route::get('/attendance/detail/{id}', [AttendanceController::class, 'index'])->name('attendance');
 
     // Route::get('/stamp_correction_request/list', [AttendanceController::class, 'index'])->name('attendance');

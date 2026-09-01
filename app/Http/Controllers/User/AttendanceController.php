@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Actions\AttendanceAction;
 use App\Http\Controllers\Controller;
+use App\Services\AttendanceService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -13,7 +14,8 @@ use Illuminate\Support\Facades\Auth;
 class AttendanceController extends Controller
 {
     public function __construct(
-        private AttendanceAction $attendanceAction
+        private AttendanceAction $attendanceAction,
+        private AttendanceService $attendanceService,
     ) {}
 
     /**
@@ -50,5 +52,18 @@ class AttendanceController extends Controller
         };
 
         return redirect()->route('attendance.index');
+    }
+
+    /**
+     * 勤怠一覧を表示
+     */
+    public function attendanceList(Request $request): View
+    {
+        $data = $this->attendanceService->getMonthlyAttendance(
+            $request->user(),
+            $request->date
+        );
+
+        return view('user.user-attendance-list', $data);
     }
 }
