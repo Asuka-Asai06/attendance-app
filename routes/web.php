@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminLogoutController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\User\AttendanceController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // 管理者画面
+Route::post('/admin/logout', [AdminLogoutController::class, 'logout']);
 // Route::get('/admin/attendance/list', [AttendanceController::class, 'index'])->name('attendance');
 // Route::get('/admin/attendance/{id}', [AttendanceController::class, 'index'])->name('attendance');
 // Route::get('/admin/staff/list', [AttendanceController::class, 'index'])->name('attendance');
