@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ApprovalStatus;
 use App\Models\AttendanceRecord;
 use App\Models\User;
 use Carbon\Carbon;
@@ -105,5 +106,44 @@ class AttendanceService
 
         return Carbon::createFromTime(0, 0, 0)
             ->addSeconds($seconds);
+    }
+
+    /**
+     * 勤怠詳細を取得する。
+     */
+    public function getAttendanceDetail(User $user, AttendanceRecord $attendanceRecord): array
+    {
+        $attendanceRecord->load([
+            'breakTimes',
+            'correctionRequests' => function ($query) {
+                $query->where(
+                    'approval_status',
+                    ApprovalStatus::Pending
+                );
+            },
+        ]);
+
+        $application = $attendanceRecord->correctionRequests->first();
+
+        return [
+            'user' => $user,
+            'data' => [
+                'id' => $attendanceRecord->id,
+                'year' => $attendanceRecord->clock_in_at->format('Y年'),
+                'date' => $attendanceRecord->clock_in_at->format('m月d日'),
+                'clock_in' => $attendanceRecord->clock_in_at->format('H:i'),
+                'clock_out' => $attendanceRecord->clock_out_at?->format('H:i'),
+                'breaks' => $attendanceRecord->breakTimes
+                    ->map(function ($breakTime) {
+                        return [
+                            'break_in' => $breakTime->break_start_at->format('H:i'),
+                            'break_out' => $breakTime->break_end_at?->format('H:i'),
+                        ];
+                    })
+                    ->toArray(),
+                'comment' => $application?->comment ?? '',
+                'application' => $application,
+            ],
+        ];
     }
 }

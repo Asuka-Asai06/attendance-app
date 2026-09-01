@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Actions\AttendanceAction;
 use App\Http\Controllers\Controller;
+use App\Models\AttendanceRecord;
 use App\Services\AttendanceService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
@@ -65,5 +66,20 @@ class AttendanceController extends Controller
         );
 
         return view('user.user-attendance-list', $data);
+    }
+
+    /**
+     * 勤怠詳細を表示
+     */
+    public function show(Request $request, AttendanceRecord $attendanceRecord): View
+    {
+        $this->authorize('view', $attendanceRecord);
+
+        $data = $this->attendanceService->getAttendanceDetail(
+            $request->user(),
+            $attendanceRecord
+        );
+
+        return view('user.user-detail', $data);
     }
 }
