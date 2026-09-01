@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamp('clock_in_at');
             $table->timestamp('clock_out_at')->nullable();
-            $table->string('status');
             $table->timestamps();
         });
     }

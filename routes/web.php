@@ -1,26 +1,27 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\User\AttendanceController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-Route::get('/', function () {
-    return view('welcome');
-});
 
 // 管理者認証
 Route::get('/admin/login', [AuthController::class, 'create'])->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.store');
+
+// 一般ユーザー認証
+Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
+// Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance');
+// Route::get('/attendance/detail/{id}', [AttendanceController::class, 'index'])->name('attendance');
+
+// Route::get('/stamp_correction_request/list', [AttendanceController::class, 'index'])->name('attendance');
+
+// 管理者画面
+// Route::get('/admin/attendance/list', [AttendanceController::class, 'index'])->name('attendance');
+// Route::get('/admin/attendance/{id}', [AttendanceController::class, 'index'])->name('attendance');
+// Route::get('/admin/staff/list', [AttendanceController::class, 'index'])->name('attendance');
+// Route::get('/admin/attendance/staff/{id}', [AttendanceController::class, 'index'])->name('attendance');
+
+// Route::get('/stamp_correction_request/list', [AttendanceController::class, 'index'])->name('attendance');
 
 /**
 *Route::middleware(['auth', 'admin'])

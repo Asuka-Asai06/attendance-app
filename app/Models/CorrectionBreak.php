@@ -24,7 +24,7 @@ class CorrectionBreak extends Model
     /**
      * 修正申請とのリレーション。
      */
-    public function attendanceCorrectionRequest(): BelongsTo
+    public function CorrectionRequest(): BelongsTo
     {
         return $this->belongsTo(
             CorrectionRequest::class

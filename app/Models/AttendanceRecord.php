@@ -16,7 +16,6 @@ class AttendanceRecord extends Model
         'user_id',
         'clock_in_at',
         'clock_out_at',
-        'status',
     ];
 
     protected $casts = [
@@ -36,7 +35,7 @@ class AttendanceRecord extends Model
     /**
      * 勤怠記録に紐づく休憩時間
      */
-    public function breaks(): HasMany
+    public function breakTimes(): HasMany
     {
         return $this->hasMany(BreakTime::class);
     }
@@ -44,7 +43,7 @@ class AttendanceRecord extends Model
     /**
      * 勤怠記録に紐づく修正申請。
      */
-    public function attendanceCorrectionRequests(): HasMany
+    public function correctionRequests(): HasMany
     {
         return $this->hasMany(
             CorrectionRequest::class

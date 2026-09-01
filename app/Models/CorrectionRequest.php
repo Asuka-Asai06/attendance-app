@@ -27,7 +27,6 @@ class CorrectionRequest extends Model
         'requested_clock_in_at' => 'datetime',
         'requested_clock_out_at' => 'datetime',
         'approved_at' => 'datetime',
-        'application_date' => 'date',
     ];
 
     /**
