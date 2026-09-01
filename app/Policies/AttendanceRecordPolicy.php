@@ -8,15 +8,7 @@ use App\Models\User;
 class AttendanceRecordPolicy
 {
     /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can view the model.
+     * 他人の勤怠詳細を見ることはできない
      */
     public function view(User $user, AttendanceRecord $attendanceRecord): bool
     {

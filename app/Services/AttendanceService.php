@@ -113,6 +113,7 @@ class AttendanceService
      */
     public function getAttendanceDetail(User $user, AttendanceRecord $attendanceRecord): array
     {
+        // 承認待ちの修正申請を取得
         $attendanceRecord->load([
             'breakTimes',
             'correctionRequests' => function ($query) {
@@ -134,6 +135,7 @@ class AttendanceService
                 'clock_in' => $attendanceRecord->clock_in_at->format('H:i'),
                 'clock_out' => $attendanceRecord->clock_out_at?->format('H:i'),
                 'breaks' => $attendanceRecord->breakTimes
+                // リレーションから休憩情報を取得し配列に変換
                     ->map(function ($breakTime) {
                         return [
                             'break_in' => $breakTime->break_start_at->format('H:i'),
