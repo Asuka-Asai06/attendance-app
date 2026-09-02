@@ -24,11 +24,13 @@ class AttendanceRecordPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * 他人の勤怠を修正することはできない
+     *
+     * @param  AttendanceRecord  $attendanceRecord  修正対象の勤怠
      */
     public function update(User $user, AttendanceRecord $attendanceRecord): bool
     {
-        //
+        return $user->id === $attendanceRecord->user_id;
     }
 
     /**

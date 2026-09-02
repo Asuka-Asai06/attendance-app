@@ -79,7 +79,7 @@ class AttendanceService
     }
 
     /**
-     * 実働時間を計算する。
+     * 実働時間を計算
      */
     private function calculateWorkTime(AttendanceRecord $attendanceRecord, int $totalBreakSeconds): ?Carbon
     {
@@ -96,7 +96,7 @@ class AttendanceService
     }
 
     /**
-     * 秒数を時間として扱えるCarbonに変換する。
+     * 秒数を時間として扱えるCarbonに変換
      */
     private function formatDuration(int $seconds): ?Carbon
     {
@@ -109,7 +109,7 @@ class AttendanceService
     }
 
     /**
-     * 勤怠詳細を取得する。
+     * 勤怠詳細を取得
      */
     public function getAttendanceDetail(User $user, AttendanceRecord $attendanceRecord): array
     {
@@ -117,14 +117,25 @@ class AttendanceService
         $attendanceRecord->load([
             'breakTimes',
             'correctionRequests' => function ($query) {
-                $query->where(
-                    'approval_status',
-                    ApprovalStatus::Pending
-                );
+                $query
+                    ->where('approval_status', ApprovalStatus::Pending)
+                    ->with('breakTimes');
             },
         ]);
 
         $application = $attendanceRecord->correctionRequests->first();
+
+        // 修正申請中の場合は、申請した日時・休憩時間を表示する
+        if ($application) {
+            $clockIn = $application->requested_clock_in_at;
+            $clockOut = $application->requested_clock_out_at;
+            $breakTimes = $application->breakTimes;
+        } else {
+            // 修正申請がない場合は、元の勤怠情報を表示する
+            $clockIn = $attendanceRecord->clock_in_at;
+            $clockOut = $attendanceRecord->clock_out_at;
+            $breakTimes = $attendanceRecord->breakTimes;
+        }
 
         return [
             'user' => $user,
@@ -132,10 +143,11 @@ class AttendanceService
                 'id' => $attendanceRecord->id,
                 'year' => $attendanceRecord->clock_in_at->format('Y年'),
                 'date' => $attendanceRecord->clock_in_at->format('m月d日'),
-                'clock_in' => $attendanceRecord->clock_in_at->format('H:i'),
-                'clock_out' => $attendanceRecord->clock_out_at?->format('H:i'),
-                'breaks' => $attendanceRecord->breakTimes
-                // リレーションから休憩情報を取得し配列に変換
+
+                'clock_in' => $clockIn?->format('H:i'),
+                'clock_out' => $clockOut?->format('H:i'),
+
+                'breaks' => $breakTimes
                     ->map(function ($breakTime) {
                         return [
                             'break_in' => $breakTime->break_start_at->format('H:i'),
@@ -143,6 +155,7 @@ class AttendanceService
                         ];
                     })
                     ->toArray(),
+
                 'comment' => $application?->comment ?? '',
                 'application' => $application,
             ],
