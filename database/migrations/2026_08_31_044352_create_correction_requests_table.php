@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('approval_status')->default('承認待ち');
             $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('approved_at')->nullable();
-            $table->timestamp('application_date');
             $table->timestamps();
         });
     }

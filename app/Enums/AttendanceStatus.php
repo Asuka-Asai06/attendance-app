@@ -7,12 +7,8 @@ namespace App\Enums;
  */
 enum AttendanceStatus: string
 {
-    // 出勤中
-    case Working = 'working';
-
-    // 休憩中
-    case OnBreak = 'on_break';
-
-    // 退勤済
-    case Finished = 'finished';
+    case Outside = '勤務外';
+    case Working = '出勤中';
+    case OnBreak = '休憩中';
+    case Finished = '退勤済';
 }
