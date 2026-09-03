@@ -3,23 +3,19 @@
 namespace App\Http\Controllers\User;
 
 use App\Actions\AttendanceAction;
-use App\Actions\CorrectionRequestAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreCorrectionRequestRequest;
 use App\Models\AttendanceRecord;
 use App\Services\AttendanceService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
     public function __construct(
         private AttendanceAction $attendanceAction,
-        private CorrectionRequestAction $correctionRequestAction,
         private AttendanceService $attendanceService,
     ) {}
 
@@ -85,25 +81,5 @@ class AttendanceController extends Controller
         );
 
         return view('user.user-detail', $data);
-    }
-
-    /**
-     * 勤怠の修正申請
-     *
-     * @param  StoreCorrectionRequestRequest  $request  バリデーション済みの修正申請
-     * @param  AttendanceRecord  $attendanceRecord  修正対象の勤怠情報
-     * @return RedirectResponse|Redirector
-     */
-    public function requestCorrection(StoreCorrectionRequestRequest $request, AttendanceRecord $attendanceRecord): RedirectResponse
-    {
-        $this->authorize('update', $attendanceRecord);
-
-        $this->correctionRequestAction->execute(
-            $request->user(),
-            $attendanceRecord,
-            $request->validated()
-        );
-
-        return redirect('/attendance/'.$attendanceRecord->id);
     }
 }

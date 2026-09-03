@@ -119,9 +119,8 @@ class AttendanceAction
     /**
      * 現在休憩中の休憩記録を取得する。
      */
-    private function getCurrentBreak(
-        AttendanceRecord $attendanceRecord
-    ): ?BreakTime {
+    private function getCurrentBreak(AttendanceRecord $attendanceRecord): ?BreakTime
+    {
         return $attendanceRecord->breakTimes()
             ->whereNull('break_end_at')
             ->latest('break_start_at')

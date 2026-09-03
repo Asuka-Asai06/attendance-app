@@ -14,11 +14,13 @@ class AttendanceRecord extends Model
 
     protected $fillable = [
         'user_id',
+        'date',
         'clock_in_at',
         'clock_out_at',
     ];
 
     protected $casts = [
+        'date' => 'date',
         'clock_in_at' => 'datetime',
         'clock_out_at' => 'datetime',
         'status' => AttendanceStatus::class,

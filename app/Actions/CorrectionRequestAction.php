@@ -2,7 +2,6 @@
 
 namespace App\Actions;
 
-use App\Enums\ApprovalStatus;
 use App\Models\AttendanceRecord;
 use App\Models\CorrectionRequest;
 use App\Models\User;
@@ -18,15 +17,14 @@ class CorrectionRequestAction
      * @param  AttendanceRecord  $attendanceRecord  修正対象の勤怠記録
      * @param  array  $data  バリデーション済みの入力データ
      * @return CorrectionRequest 作成した修正申請
+     *
+     * @throws RuntimeException すでに承認待ちの修正申請がある場合
      */
     public function execute(User $user, AttendanceRecord $attendanceRecord, array $data): CorrectionRequest
     {
         $hasPendingRequest = $attendanceRecord
             ->correctionRequests()
-            ->where(
-                'approval_status',
-                ApprovalStatus::Pending->value
-            )
+            ->where('approval_status', '承認待ち')
             ->exists();
 
         if ($hasPendingRequest) {
@@ -39,10 +37,8 @@ class CorrectionRequestAction
             $user,
             $attendanceRecord,
             $data
-        ) {
-            $date = $attendanceRecord
-                ->clock_in_at
-                ->format('Y-m-d');
+        ): CorrectionRequest {
+            $date = $attendanceRecord->clock_in_at->format('Y-m-d');
 
             $correctionRequest = CorrectionRequest::create([
                 'attendance_record_id' => $attendanceRecord->id,
@@ -60,7 +56,7 @@ class CorrectionRequestAction
 
                 'comment' => $data['comment'],
 
-                'approval_status' => ApprovalStatus::Pending,
+                'approval_status' => '承認待ち',
             ]);
 
             $this->createCorrectionBreaks(
@@ -75,6 +71,10 @@ class CorrectionRequestAction
 
     /**
      * 日付と時刻から日時を作成する。
+     *
+     * @param  string  $date  日付
+     * @param  string  $time  時刻
+     * @return string 日時
      */
     private function createDateTime(string $date, string $time): string
     {
@@ -83,6 +83,10 @@ class CorrectionRequestAction
 
     /**
      * 修正申請の休憩時間を作成する。
+     *
+     * @param  CorrectionRequest  $correctionRequest  修正申請
+     * @param  string  $date  勤怠日
+     * @param  array  $data  バリデーション済みの入力データ
      */
     private function createCorrectionBreaks(CorrectionRequest $correctionRequest, string $date, array $data): void
     {
