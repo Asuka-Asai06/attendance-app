@@ -29,6 +29,14 @@ Laravelで開発した、勤怠管理アプリケーションです。
 ## ER図
 ```mermaid
 erDiagram
+
+    users ||--o{ attendance_records : "hasMany"  
+    attendance_records ||--o{ break_times : "hasMany"  
+    users ||--o{ correction_requests : submits  
+    users ||--o{ correction_requests : approves  
+    attendance_records ||--o{ correction_requests : "hasMany"  
+    correction_requests ||--o{ correction_breaks : "hasMany"  
+
     users {
         bigint id PK
         string name
@@ -81,13 +89,6 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-
-    users ||--o{ attendance_records : requests
-    attendance_records ||--o{ break_times : has many
-    users ||--o{ correction_requests : requests
-    users ||--o{ correction_requests : approves
-    attendance_records ||--o{ correction_requests : has many
-    correction_requests ||--o{ correction_breaks : has many
 ```
 
 ## URL
