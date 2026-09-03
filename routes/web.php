@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminAttendanceController;
-use App\Http\Controllers\Admin\AdminLogoutController;
-use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\AdminAttendanceController;
+use App\Http\Controllers\AdminLogoutController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CorrectionRequestController;
-use App\Http\Controllers\User\AttendanceController;
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 
 // 管理者認証
