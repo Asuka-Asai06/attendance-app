@@ -120,4 +120,65 @@ class AdminAttendanceService
         return Carbon::createFromTime(0, 0, 0)
             ->addSeconds($seconds);
     }
+
+    /**
+     * 管理者用の勤怠詳細を取得する。
+     *
+     * @param  AttendanceRecord  $attendanceRecord  勤怠記録
+     * @return array<string, mixed> 管理者用勤怠詳細
+     */
+    public function getAttendanceDetail(AttendanceRecord $attendanceRecord): array
+    {
+        $attendanceRecord->load([
+            'user',
+            'breakTimes',
+            'correctionRequests',
+        ]);
+
+        $hasPendingRequest = $attendanceRecord
+            ->correctionRequests
+            ->contains(function ($correctionRequest): bool {
+                return $correctionRequest->approval_status === '承認待ち';
+            });
+
+        $totalBreakSeconds = $this->calculateBreakSeconds(
+            $attendanceRecord->breakTimes
+        );
+
+        return [
+            'attendanceRecord' => [
+                'id' => $attendanceRecord->id,
+
+                'year' => $attendanceRecord->clock_in_at
+                    ->format('Y年'),
+
+                'date' => $attendanceRecord->clock_in_at
+                    ->format('m月d日'),
+
+                'clock_in' => $attendanceRecord->clock_in_at
+                    ->format('H:i'),
+
+                'clock_out' => $attendanceRecord->clock_out_at
+                    ?->format('H:i') ?? '',
+
+                'breaks' => $attendanceRecord->breakTimes
+                    ->map(function ($breakTime): array {
+                        return [
+                            'break_in' => $breakTime->break_start_at
+                                ->format('H:i'),
+
+                            'break_out' => $breakTime->break_end_at
+                                ?->format('H:i') ?? '',
+                        ];
+                    })
+                    ->values()
+                    ->toArray(),
+
+                'comment' => '',
+            ],
+
+            'user' => $attendanceRecord->user,
+            'hasPendingRequest' => $hasPendingRequest,
+        ];
+    }
 }

@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Services\AdminAttendanceService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -14,7 +13,7 @@ class AdminAttendanceController extends Controller
     ) {}
 
     /**
-     * 指定日の全ユーザーの勤怠一覧を表示する。
+     * 指定日の全ユーザーの勤怠一覧を表示
      *
      * @return View 管理者用勤怠一覧画面
      */
