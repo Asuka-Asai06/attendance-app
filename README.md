@@ -65,7 +65,7 @@ erDiagram
         bigint user_id FK
         timestamp requested_clock_in_at
         timestamp requested_clock_out_at
-        text comment
+        string comment
         string approval_status
         bigint approved_by FK
         timestamp approved_at
@@ -82,17 +82,12 @@ erDiagram
         timestamp updated_at
     }
 
-    users ||--o{ attendance_records : "has many"
-
-    attendance_records ||--o{ break_times : "has many"
-
-    users ||--o{ correction_requests : "requests"
-    users ||--o{ correction_requests : "approves"
-
-    attendance_records ||--o{ correction_requests : "has many"
-
-    correction_requests ||--o{ correction_breaks : "has many"
-}
+    users ||--o{ attendance_records : requests
+    attendance_records ||--o{ break_times : has many
+    users ||--o{ correction_requests : requests
+    users ||--o{ correction_requests : approves
+    attendance_records ||--o{ correction_requests : has many
+    correction_requests ||--o{ correction_breaks : has many
 ```
 
 ## URL
