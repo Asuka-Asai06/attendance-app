@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Enums\ApprovalStatus;
 use App\Models\AttendanceRecord;
 use App\Models\User;
 use Carbon\Carbon;
@@ -11,7 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 class AttendanceService
 {
     /**
-     * 指定された月の勤怠一覧を取得
+     * 指定された月の勤怠一覧を取得する。
      */
     public function getMonthlyAttendance(User $user, ?string $month): array
     {
@@ -79,7 +78,7 @@ class AttendanceService
     }
 
     /**
-     * 実働時間を計算
+     * 実働時間を計算する。
      */
     private function calculateWorkTime(AttendanceRecord $attendanceRecord, int $totalBreakSeconds): ?Carbon
     {
@@ -96,7 +95,7 @@ class AttendanceService
     }
 
     /**
-     * 秒数を時間として扱えるCarbonに変換
+     * 秒数を時間として扱えるCarbonに変換する。
      */
     private function formatDuration(int $seconds): ?Carbon
     {
@@ -109,7 +108,7 @@ class AttendanceService
     }
 
     /**
-     * 勤怠詳細を取得
+     * 勤怠詳細を取得する。
      */
     public function getAttendanceDetail(User $user, AttendanceRecord $attendanceRecord): array
     {
@@ -118,7 +117,7 @@ class AttendanceService
             'breakTimes',
             'correctionRequests' => function ($query) {
                 $query
-                    ->where('approval_status', ApprovalStatus::Pending)
+                    ->where('approval_status', '承認待ち')
                     ->with('breakTimes');
             },
         ]);
@@ -148,7 +147,7 @@ class AttendanceService
                 'clock_out' => $clockOut?->format('H:i'),
 
                 'breaks' => $breakTimes
-                    ->map(function ($breakTime) {
+                    ->map(function ($breakTime): array {
                         return [
                             'break_in' => $breakTime->break_start_at->format('H:i'),
                             'break_out' => $breakTime->break_end_at?->format('H:i'),

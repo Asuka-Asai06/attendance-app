@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\ApprovalStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,7 +26,6 @@ class CorrectionRequest extends Model
         'requested_clock_in_at' => 'datetime',
         'requested_clock_out_at' => 'datetime',
         'approved_at' => 'datetime',
-        'approval_status' => ApprovalStatus::class,
     ];
 
     /**
