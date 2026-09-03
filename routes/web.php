@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\AdminAttendanceController;
 use App\Http\Controllers\AdminLogoutController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CorrectionRequestController;
-use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 
 // 管理者認証
@@ -26,6 +26,7 @@ Route::middleware(['auth', 'admin'])
         Route::post('/logout', [AdminLogoutController::class, 'logout']);
         Route::get('/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendance.list');
         Route::get('/attendance/{attendanceRecord}', [AttendanceController::class, 'show'])->name('attendance.show');
+        Route::post('/stamp_correction_request/approve/{correctionRequest}', [CorrectionRequestController::class, 'approve'])->name('stamp_correction_request.approve');
         // Route::get('/admin/staff/list', [AttendanceController::class, 'index'])->name('attendance');
         // Route::get('/admin/attendance/staff/{id}', [AttendanceController::class, 'index'])->name('attendance');
     });

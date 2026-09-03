@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Actions\AttendanceAction;
-use App\Http\Controllers\Controller;
 use App\Models\AttendanceRecord;
 use App\Services\AdminAttendanceService;
 use App\Services\AttendanceService;

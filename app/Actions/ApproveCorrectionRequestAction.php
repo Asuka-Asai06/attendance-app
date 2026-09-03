@@ -12,13 +12,13 @@ class ApproveCorrectionRequestAction
     /**
      * 修正申請を承認し、勤怠へ反映する。
      *
-     * @param User $admin 承認を行う管理者
-     * @param CorrectionRequest $correctionRequest 承認対象の修正申請
+     * @param  User  $admin  承認を行う管理者
+     * @param  CorrectionRequest  $correctionRequest  承認対象の修正申請
      * @return CorrectionRequest 承認した修正申請
      *
      * @throws RuntimeException 承認待ちではない場合
      */
-    public function execute(User $admin,CorrectionRequest $correctionRequest): CorrectionRequest
+    public function execute(User $admin, CorrectionRequest $correctionRequest): CorrectionRequest
     {
         if ($correctionRequest->approval_status !== '承認待ち') {
             throw new RuntimeException(

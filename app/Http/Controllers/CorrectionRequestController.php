@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\ApproveCorrectionRequestAction;
 use App\Actions\CorrectionRequestAction;
 use App\Actions\UpdateAttendanceAction;
 use App\Http\Requests\UpdateAttendanceRequest;
@@ -19,7 +20,8 @@ class CorrectionRequestController extends Controller
         private AttendanceService $attendanceService,
         private CorrectionRequestAction $correctionRequestAction,
         private CorrectionRequestService $correctionRequestService,
-        private UpdateAttendanceAction $updateAttendanceAction
+        private UpdateAttendanceAction $updateAttendanceAction,
+        private ApproveCorrectionRequestAction $approveCorrectionRequestAction
     ) {}
 
     /**
@@ -96,5 +98,22 @@ class CorrectionRequestController extends Controller
         }
 
         return redirect()->route('attendance.show', $attendanceRecord);
+    }
+
+    /**
+     * 修正申請を承認する。
+     *
+     * @param  Request  $request  ログイン中の管理者
+     * @param  CorrectionRequest  $correctionRequest  承認対象の修正申請
+     * @return RedirectResponse 承認後の申請一覧画面
+     */
+    public function approve(Request $request, CorrectionRequest $correctionRequest): RedirectResponse
+    {
+        $this->approveCorrectionRequestAction->execute(
+            $request->user(),
+            $correctionRequest
+        );
+
+        return redirect()->route('stamp_correction_request.list');
     }
 }
