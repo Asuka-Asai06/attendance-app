@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAttendanceController;
 use App\Http\Controllers\Admin\AdminLogoutController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\CorrectionRequestController;
@@ -25,7 +26,7 @@ Route::middleware(['auth', 'admin'])
     ->name('admin.')
     ->group(function () {
         Route::post('/logout', [AdminLogoutController::class, 'logout']);
-        // Route::get('/admin/attendance/list', [AttendanceController::class, 'index'])->name('attendance');
+        Route::get('/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendance.list');
         // Route::get('/admin/attendance/{id}', [AttendanceController::class, 'index'])->name('attendance');
         // Route::get('/admin/staff/list', [AttendanceController::class, 'index'])->name('attendance');
         // Route::get('/admin/attendance/staff/{id}', [AttendanceController::class, 'index'])->name('attendance');

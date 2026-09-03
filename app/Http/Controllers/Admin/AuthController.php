@@ -42,6 +42,6 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/admin');
+        return redirect()->route('admin.attendance.list');
     }
 }
