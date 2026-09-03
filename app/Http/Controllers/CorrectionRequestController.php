@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Actions\CorrectionRequestAction;
-use App\Http\Requests\StoreCorrectionRequestRequest;
+use App\Actions\UpdateAttendanceAction;
+use App\Http\Requests\UpdateAttendanceRequest;
 use App\Models\AttendanceRecord;
 use App\Models\CorrectionRequest;
 use App\Services\AttendanceService;
@@ -18,6 +19,7 @@ class CorrectionRequestController extends Controller
         private AttendanceService $attendanceService,
         private CorrectionRequestAction $correctionRequestAction,
         private CorrectionRequestService $correctionRequestService,
+        private UpdateAttendanceAction $updateAttendanceAction
     ) {}
 
     /**
@@ -50,10 +52,10 @@ class CorrectionRequestController extends Controller
 
         if ($user->admin_status) {
             $application = $this->correctionRequestService
-                ->getAdminApplicationDetail($correctionRequest);
+                ->getApplicationDetail($correctionRequest);
 
             // 管理者の場合
-            return view('admin.application-detail', ['application' => $application, 'user' => $correctionRequest->user]);
+            return view('admin.admin-application-detail', ['application' => $application, 'user' => $correctionRequest->user]);
         }
 
         // 一般ユーザーの場合
@@ -63,22 +65,36 @@ class CorrectionRequestController extends Controller
     }
 
     /**
-     * 勤怠の修正申請を作成
+     * 勤怠を修正する。
      *
-     * @param  StoreCorrectionRequestRequest  $request  バリデーション済みの修正申請
-     * @param  AttendanceRecord  $attendanceRecord  修正対象の勤怠情報
-     * @return RedirectResponse|Redirector
+     * 一般ユーザーの場合は修正申請を作成する。
+     * 管理者ユーザーの場合は修正申請を作成したうえで勤怠に反映する。
+     *
+     * @param  UpdateAttendanceRequest  $request  バリデーション済みの勤怠修正データ
+     * @param  AttendanceRecord  $attendanceRecord  修正対象の勤怠記録
      */
-    public function store(StoreCorrectionRequestRequest $request, AttendanceRecord $attendanceRecord): RedirectResponse
+    public function update(UpdateAttendanceRequest $request, AttendanceRecord $attendanceRecord): RedirectResponse
     {
+        $user = $request->user();
+
         $this->authorize('update', $attendanceRecord);
 
-        $this->correctionRequestAction->execute(
-            $request->user(),
-            $attendanceRecord,
-            $request->validated()
-        );
+        // 管理者ユーザーの場合
+        if ($user->admin_status) {
+            $this->updateAttendanceAction->execute(
+                $user,
+                $attendanceRecord,
+                $request->validated()
+            );
+            // 一般ユーザーの場合
+        } else {
+            $this->correctionRequestAction->execute(
+                $user,
+                $attendanceRecord,
+                $request->validated()
+            );
+        }
 
-        return redirect('/attendance/'.$attendanceRecord->id);
+        return redirect()->route('attendance.show', $attendanceRecord);
     }
 }

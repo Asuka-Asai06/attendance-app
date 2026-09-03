@@ -5,15 +5,20 @@ namespace App\Http\Requests;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCorrectionRequestRequest extends FormRequest
+class UpdateAttendanceRequest extends FormRequest
 {
+    /**
+     * このリクエストを実行できるか判定する。
+     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * バリデーションルールを取得
+     * バリデーションルールを取得する。
+     *
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -32,7 +37,9 @@ class StoreCorrectionRequestRequest extends FormRequest
     }
 
     /**
-     * バリデーションエラーメッセージを取得
+     * バリデーションエラーメッセージを取得する。
+     *
+     * @return array<string, string>
      */
     public function messages(): array
     {
@@ -57,7 +64,7 @@ class StoreCorrectionRequestRequest extends FormRequest
     public function after(): array
     {
         return [
-            function ($validator) {
+            function ($validator): void {
                 if ($validator->errors()->isNotEmpty()) {
                     return;
                 }
@@ -69,7 +76,7 @@ class StoreCorrectionRequestRequest extends FormRequest
     }
 
     /**
-     * 出勤時間と退勤時間の前後関係を検証
+     * 出勤時間と退勤時間の前後関係を検証する。
      */
     private function validateClockInOut($validator): void
     {
@@ -80,8 +87,13 @@ class StoreCorrectionRequestRequest extends FormRequest
             return;
         }
 
-        $clockIn = $this->createTime($this->input('new_clock_in'));
-        $clockOut = $this->createTime($this->input('new_clock_out'));
+        $clockIn = $this->createTime(
+            $this->input('new_clock_in')
+        );
+
+        $clockOut = $this->createTime(
+            $this->input('new_clock_out')
+        );
 
         if ($clockIn->greaterThan($clockOut)) {
             $validator->errors()->add(
@@ -92,7 +104,7 @@ class StoreCorrectionRequestRequest extends FormRequest
     }
 
     /**
-     * 休憩時間を検証
+     * 休憩時間を検証する。
      */
     private function validateBreakTimes($validator): void
     {
@@ -106,13 +118,17 @@ class StoreCorrectionRequestRequest extends FormRequest
             return;
         }
 
-        $clockIn = $this->createTime($this->input('new_clock_in'));
-        $clockOut = $this->createTime($this->input('new_clock_out'));
+        $clockIn = $this->createTime(
+            $this->input('new_clock_in')
+        );
+
+        $clockOut = $this->createTime(
+            $this->input('new_clock_out')
+        );
 
         foreach ($breakIns as $index => $breakIn) {
             $breakOut = $breakOuts[$index] ?? null;
 
-            // 開始・終了が片方だけ入力されていないか
             $this->validateBreakPair(
                 $validator,
                 $breakIn,
@@ -120,7 +136,6 @@ class StoreCorrectionRequestRequest extends FormRequest
                 $index
             );
 
-            // 休憩開始 < 休憩終了になっているか
             $this->validateBreakTimeOrder(
                 $validator,
                 $breakIn,
@@ -128,7 +143,6 @@ class StoreCorrectionRequestRequest extends FormRequest
                 $index
             );
 
-            // 休憩開始が出勤より前になっていないか
             $this->validateBreakInBeforeClockIn(
                 $validator,
                 $breakIn,
@@ -136,7 +150,6 @@ class StoreCorrectionRequestRequest extends FormRequest
                 $index
             );
 
-            // 休憩終了が出勤より前になっていないか
             $this->validateBreakOutBeforeClockIn(
                 $validator,
                 $breakOut,
@@ -144,7 +157,6 @@ class StoreCorrectionRequestRequest extends FormRequest
                 $index
             );
 
-            // 休憩開始が退勤より後になっていないか
             $this->validateBreakInAfterClockOut(
                 $validator,
                 $breakIn,
@@ -152,7 +164,6 @@ class StoreCorrectionRequestRequest extends FormRequest
                 $index
             );
 
-            // 休憩終了が退勤より後になっていないか
             $this->validateBreakOutAfterClockOut(
                 $validator,
                 $breakOut,
@@ -163,10 +174,14 @@ class StoreCorrectionRequestRequest extends FormRequest
     }
 
     /**
-     * 休憩開始・終了が両方入力されているか検証
+     * 休憩開始・終了が両方入力されているか検証する。
      */
-    private function validateBreakPair($validator, ?string $breakIn, ?string $breakOut, int $index): void
-    {
+    private function validateBreakPair(
+        $validator,
+        ?string $breakIn,
+        ?string $breakOut,
+        int $index
+    ): void {
         if (filled($breakIn) && blank($breakOut)) {
             $validator->errors()->add(
                 "new_break_out.{$index}",
@@ -183,10 +198,14 @@ class StoreCorrectionRequestRequest extends FormRequest
     }
 
     /**
-     * 休憩開始時間と休憩終了時間の前後関係を検証
+     * 休憩開始時間と休憩終了時間の前後関係を検証する。
      */
-    private function validateBreakTimeOrder($validator, ?string $breakIn, ?string $breakOut, int $index): void
-    {
+    private function validateBreakTimeOrder(
+        $validator,
+        ?string $breakIn,
+        ?string $breakOut,
+        int $index
+    ): void {
         if (blank($breakIn) || blank($breakOut)) {
             return;
         }
@@ -203,10 +222,14 @@ class StoreCorrectionRequestRequest extends FormRequest
     }
 
     /**
-     * 休憩開始時間が出勤時間より前になっていないか検証
+     * 休憩開始時間が出勤時間より前になっていないか検証する。
      */
-    private function validateBreakInBeforeClockIn($validator, ?string $breakIn, Carbon $clockIn, int $index): void
-    {
+    private function validateBreakInBeforeClockIn(
+        $validator,
+        ?string $breakIn,
+        Carbon $clockIn,
+        int $index
+    ): void {
         if (blank($breakIn)) {
             return;
         }
@@ -222,10 +245,14 @@ class StoreCorrectionRequestRequest extends FormRequest
     }
 
     /**
-     * 休憩終了時間が出勤時間より前になっていないか検証
+     * 休憩終了時間が出勤時間より前になっていないか検証する。
      */
-    private function validateBreakOutBeforeClockIn($validator, ?string $breakOut, Carbon $clockIn, int $index): void
-    {
+    private function validateBreakOutBeforeClockIn(
+        $validator,
+        ?string $breakOut,
+        Carbon $clockIn,
+        int $index
+    ): void {
         if (blank($breakOut)) {
             return;
         }
@@ -241,10 +268,14 @@ class StoreCorrectionRequestRequest extends FormRequest
     }
 
     /**
-     * 休憩開始時間が退勤時間より後になっていないか検証
+     * 休憩開始時間が退勤時間より後になっていないか検証する。
      */
-    private function validateBreakInAfterClockOut($validator, ?string $breakIn, Carbon $clockOut, int $index): void
-    {
+    private function validateBreakInAfterClockOut(
+        $validator,
+        ?string $breakIn,
+        Carbon $clockOut,
+        int $index
+    ): void {
         if (blank($breakIn)) {
             return;
         }
@@ -260,10 +291,14 @@ class StoreCorrectionRequestRequest extends FormRequest
     }
 
     /**
-     * 休憩終了時間が退勤時間より後になっていないか検証
+     * 休憩終了時間が退勤時間より後になっていないか検証する。
      */
-    private function validateBreakOutAfterClockOut($validator, ?string $breakOut, Carbon $clockOut, int $index): void
-    {
+    private function validateBreakOutAfterClockOut(
+        $validator,
+        ?string $breakOut,
+        Carbon $clockOut,
+        int $index
+    ): void {
         if (blank($breakOut)) {
             return;
         }
@@ -273,13 +308,13 @@ class StoreCorrectionRequestRequest extends FormRequest
         if ($breakEnd->greaterThan($clockOut)) {
             $validator->errors()->add(
                 "new_break_out.{$index}",
-                '休憩時間もしくは退勤時間が不適切な値です'
+                '休憩時間が不適切な値です'
             );
         }
     }
 
     /**
-     * 時刻文字列をCarbonに変換
+     * 時刻文字列をCarbonに変換する。
      */
     private function createTime(string $time): Carbon
     {

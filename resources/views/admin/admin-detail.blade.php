@@ -109,9 +109,17 @@
                     </div>
                 </div>
 
-                <div class="form__button">
-                    <button class="form__button--submit" type="submit">修正</button>
-                </div>
+<div class="form__button">
+    @if ($hasPendingRequest)
+        <p class="readonly-message">
+            承認待ちのため修正はできません。
+        </p>
+    @else
+        <button class="form__button--submit" type="submit">修正</button>
+    @endif
+</div>
+
+
         </form>
     </div>
 @endsection

@@ -12,7 +12,8 @@ class AttendanceRecordPolicy
      */
     public function view(User $user, AttendanceRecord $attendanceRecord): bool
     {
-        return $user->id === $attendanceRecord->user_id;
+        return $user->admin_status
+            || $user->id === $attendanceRecord->user_id;
     }
 
     /**
@@ -24,13 +25,14 @@ class AttendanceRecordPolicy
     }
 
     /**
-     * 他人の勤怠を修正することはできない
+     * 管理者以外は他人の勤怠を修正することはできない
      *
      * @param  AttendanceRecord  $attendanceRecord  修正対象の勤怠
      */
     public function update(User $user, AttendanceRecord $attendanceRecord): bool
     {
-        return $user->id === $attendanceRecord->user_id;
+        return $user->admin_status
+            || $user->id === $attendanceRecord->user_id;
     }
 
     /**
