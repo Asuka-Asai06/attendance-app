@@ -248,7 +248,7 @@ class UpdateAttendanceRequest extends FormRequest
     /**
      * 休憩開始・終了が両方入力されているか検証する。
      */
-    private function validateBreakPair($validator,?string $breakIn,?string $breakOut,int $index): void
+    private function validateBreakPair($validator, ?string $breakIn, ?string $breakOut, int $index): void
     {
         if (filled($breakIn) && blank($breakOut)) {
             $this->addErrorOnce(
@@ -270,7 +270,7 @@ class UpdateAttendanceRequest extends FormRequest
     /**
      * 休憩開始時間と休憩終了時間の前後関係を検証する。
      */
-    private function validateBreakTimeOrder($validator,?string $breakIn,?string $breakOut,int $index): void
+    private function validateBreakTimeOrder($validator, ?string $breakIn, ?string $breakOut, int $index): void
     {
         if (
             blank($breakIn) ||
@@ -294,7 +294,7 @@ class UpdateAttendanceRequest extends FormRequest
     /**
      * 時刻形式のエラーがあるか判定する。
      */
-    private function hasDateFormatError($validator,string $field): bool
+    private function hasDateFormatError($validator, string $field): bool
     {
         $failed = $validator->failed();
 
@@ -304,7 +304,7 @@ class UpdateAttendanceRequest extends FormRequest
     /**
      * 同じフィールドに同じエラーメッセージが存在する場合は追加しない。
      */
-    private function addErrorOnce($validator,string $field,string $message): void
+    private function addErrorOnce($validator, string $field, string $message): void
     {
         if (
             ! in_array(

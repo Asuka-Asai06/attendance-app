@@ -33,7 +33,7 @@ Route::middleware(['auth', 'admin'])
 Route::middleware(['auth'])->group(function () {
     Route::get('/stamp_correction_request/list', [CorrectionRequestController::class, 'index'])->name('correction.request.list');
     Route::get('/stamp_correction_request/approve/{correctionRequest}', [CorrectionRequestController::class, 'show'])->name('correction.request.show');
-    Route::post('/stamp_correction_request/approve/{correctionRequest}',[CorrectionRequestController::class, 'approve'])->name('correction_request.approve');
+    Route::post('/stamp_correction_request/approve/{correctionRequest}', [CorrectionRequestController::class, 'approve'])->name('correction_request.approve');
     Route::get('/attendance/{attendanceRecord}', [AttendanceController::class, 'show'])->name('attendance.show');
     Route::post('/attendance/{attendanceRecord}', [CorrectionRequestController::class, 'update'])->name('attendance.correction.store');
 });
