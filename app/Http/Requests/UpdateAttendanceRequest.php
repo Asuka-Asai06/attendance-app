@@ -65,10 +65,6 @@ class UpdateAttendanceRequest extends FormRequest
     {
         return [
             function ($validator): void {
-                if ($validator->errors()->isNotEmpty()) {
-                    return;
-                }
-
                 $this->validateClockInOut($validator);
                 $this->validateBreakTimes($validator);
             },
@@ -87,6 +83,19 @@ class UpdateAttendanceRequest extends FormRequest
             return;
         }
 
+        if (
+            $this->hasDateFormatError(
+                $validator,
+                'new_clock_in'
+            ) ||
+            $this->hasDateFormatError(
+                $validator,
+                'new_clock_out'
+            )
+        ) {
+            return;
+        }
+
         $clockIn = $this->createTime(
             $this->input('new_clock_in')
         );
@@ -96,9 +105,10 @@ class UpdateAttendanceRequest extends FormRequest
         );
 
         if ($clockIn->greaterThan($clockOut)) {
-            $validator->errors()->add(
+            $this->addErrorOnce(
+                $validator,
                 'new_clock_in',
-                '出勤時間が不適切な値です'
+                '出勤時間もしくは退勤時間が不適切な値です'
             );
         }
     }
@@ -114,6 +124,19 @@ class UpdateAttendanceRequest extends FormRequest
         if (
             ! $this->filled('new_clock_in') ||
             ! $this->filled('new_clock_out')
+        ) {
+            return;
+        }
+
+        if (
+            $this->hasDateFormatError(
+                $validator,
+                'new_clock_in'
+            ) ||
+            $this->hasDateFormatError(
+                $validator,
+                'new_clock_out'
+            )
         ) {
             return;
         }
@@ -136,61 +159,108 @@ class UpdateAttendanceRequest extends FormRequest
                 $index
             );
 
-            $this->validateBreakTimeOrder(
+            $breakInHasFormatError = $this->hasDateFormatError(
                 $validator,
-                $breakIn,
-                $breakOut,
-                $index
+                "new_break_in.{$index}"
             );
 
-            $this->validateBreakInBeforeClockIn(
+            $breakOutHasFormatError = $this->hasDateFormatError(
                 $validator,
-                $breakIn,
-                $clockIn,
-                $index
+                "new_break_out.{$index}"
             );
 
-            $this->validateBreakOutBeforeClockIn(
-                $validator,
-                $breakOut,
-                $clockIn,
-                $index
-            );
+            if (
+                ! $breakInHasFormatError &&
+                ! $breakOutHasFormatError &&
+                filled($breakIn) &&
+                filled($breakOut)
+            ) {
+                $this->validateBreakTimeOrder(
+                    $validator,
+                    $breakIn,
+                    $breakOut,
+                    $index
+                );
+            }
 
-            $this->validateBreakInAfterClockOut(
-                $validator,
-                $breakIn,
-                $clockOut,
-                $index
-            );
+            if (
+                ! $breakInHasFormatError &&
+                filled($breakIn)
+            ) {
+                $breakStart = $this->createTime($breakIn);
 
-            $this->validateBreakOutAfterClockOut(
-                $validator,
-                $breakOut,
-                $clockOut,
-                $index
-            );
+                if ($breakStart->lessThan($clockIn)) {
+                    $this->addErrorOnce(
+                        $validator,
+                        "new_break_in.{$index}",
+                        '休憩時間が不適切な値です'
+                    );
+                }
+            }
+
+            if (
+                ! $breakInHasFormatError &&
+                filled($breakIn)
+            ) {
+                $breakStart = $this->createTime($breakIn);
+
+                if ($breakStart->greaterThan($clockOut)) {
+                    $this->addErrorOnce(
+                        $validator,
+                        "new_break_in.{$index}",
+                        '休憩時間が不適切な値です'
+                    );
+                }
+            }
+
+            if (
+                ! $breakOutHasFormatError &&
+                filled($breakOut)
+            ) {
+                $breakEnd = $this->createTime($breakOut);
+
+                if ($breakEnd->lessThan($clockIn)) {
+                    $this->addErrorOnce(
+                        $validator,
+                        "new_break_out.{$index}",
+                        '休憩時間が不適切な値です'
+                    );
+                }
+            }
+
+            if (
+                ! $breakOutHasFormatError &&
+                filled($breakOut)
+            ) {
+                $breakEnd = $this->createTime($breakOut);
+
+                if ($breakEnd->greaterThan($clockOut)) {
+                    $this->addErrorOnce(
+                        $validator,
+                        "new_break_out.{$index}",
+                        '休憩時間もしくは退勤時間が不適切な値です'
+                    );
+                }
+            }
         }
     }
 
     /**
      * 休憩開始・終了が両方入力されているか検証する。
      */
-    private function validateBreakPair(
-        $validator,
-        ?string $breakIn,
-        ?string $breakOut,
-        int $index
-    ): void {
+    private function validateBreakPair($validator,?string $breakIn,?string $breakOut,int $index): void
+    {
         if (filled($breakIn) && blank($breakOut)) {
-            $validator->errors()->add(
+            $this->addErrorOnce(
+                $validator,
                 "new_break_out.{$index}",
                 '休憩終了時間を入力してください'
             );
         }
 
         if (blank($breakIn) && filled($breakOut)) {
-            $validator->errors()->add(
+            $this->addErrorOnce(
+                $validator,
                 "new_break_in.{$index}",
                 '休憩開始時間を入力してください'
             );
@@ -200,13 +270,12 @@ class UpdateAttendanceRequest extends FormRequest
     /**
      * 休憩開始時間と休憩終了時間の前後関係を検証する。
      */
-    private function validateBreakTimeOrder(
-        $validator,
-        ?string $breakIn,
-        ?string $breakOut,
-        int $index
-    ): void {
-        if (blank($breakIn) || blank($breakOut)) {
+    private function validateBreakTimeOrder($validator,?string $breakIn,?string $breakOut,int $index): void
+    {
+        if (
+            blank($breakIn) ||
+            blank($breakOut)
+        ) {
             return;
         }
 
@@ -214,7 +283,8 @@ class UpdateAttendanceRequest extends FormRequest
         $breakEnd = $this->createTime($breakOut);
 
         if ($breakStart->greaterThan($breakEnd)) {
-            $validator->errors()->add(
+            $this->addErrorOnce(
+                $validator,
                 "new_break_in.{$index}",
                 '休憩時間が不適切な値です'
             );
@@ -222,93 +292,30 @@ class UpdateAttendanceRequest extends FormRequest
     }
 
     /**
-     * 休憩開始時間が出勤時間より前になっていないか検証する。
+     * 時刻形式のエラーがあるか判定する。
      */
-    private function validateBreakInBeforeClockIn(
-        $validator,
-        ?string $breakIn,
-        Carbon $clockIn,
-        int $index
-    ): void {
-        if (blank($breakIn)) {
-            return;
-        }
+    private function hasDateFormatError($validator,string $field): bool
+    {
+        $failed = $validator->failed();
 
-        $breakStart = $this->createTime($breakIn);
-
-        if ($breakStart->lessThan($clockIn)) {
-            $validator->errors()->add(
-                "new_break_in.{$index}",
-                '休憩時間もしくは出勤時間が不適切な値です'
-            );
-        }
+        return isset($failed[$field]['DateFormat']);
     }
 
     /**
-     * 休憩終了時間が出勤時間より前になっていないか検証する。
+     * 同じフィールドに同じエラーメッセージが存在する場合は追加しない。
      */
-    private function validateBreakOutBeforeClockIn(
-        $validator,
-        ?string $breakOut,
-        Carbon $clockIn,
-        int $index
-    ): void {
-        if (blank($breakOut)) {
-            return;
-        }
-
-        $breakEnd = $this->createTime($breakOut);
-
-        if ($breakEnd->lessThan($clockIn)) {
+    private function addErrorOnce($validator,string $field,string $message): void
+    {
+        if (
+            ! in_array(
+                $message,
+                $validator->errors()->get($field),
+                true
+            )
+        ) {
             $validator->errors()->add(
-                "new_break_out.{$index}",
-                '休憩時間もしくは出勤時間が不適切な値です'
-            );
-        }
-    }
-
-    /**
-     * 休憩開始時間が退勤時間より後になっていないか検証する。
-     */
-    private function validateBreakInAfterClockOut(
-        $validator,
-        ?string $breakIn,
-        Carbon $clockOut,
-        int $index
-    ): void {
-        if (blank($breakIn)) {
-            return;
-        }
-
-        $breakStart = $this->createTime($breakIn);
-
-        if ($breakStart->greaterThan($clockOut)) {
-            $validator->errors()->add(
-                "new_break_in.{$index}",
-                '休憩時間が不適切な値です'
-            );
-        }
-    }
-
-    /**
-     * 休憩終了時間が退勤時間より後になっていないか検証する。
-     */
-    private function validateBreakOutAfterClockOut(
-        $validator,
-        ?string $breakOut,
-        Carbon $clockOut,
-        int $index
-    ): void {
-        if (blank($breakOut)) {
-            return;
-        }
-
-        $breakEnd = $this->createTime($breakOut);
-
-        if ($breakEnd->greaterThan($clockOut)) {
-            $validator->errors()->add(
-                "new_break_out.{$index}",
-                '休憩時間が不適切な値です'
+                $field,
+                $message
             );
         }
     }

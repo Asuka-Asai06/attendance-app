@@ -114,6 +114,6 @@ class CorrectionRequestController extends Controller
             $correctionRequest
         );
 
-        return redirect()->route('stamp_correction_request.list');
+        return redirect()->route('correction_request.approve');
     }
 }
