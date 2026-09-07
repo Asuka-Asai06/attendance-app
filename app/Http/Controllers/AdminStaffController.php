@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Carbon\Carbon;
+use App\Services\AdminAttendanceService;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 
 class AdminStaffController extends Controller
 {
+    public function __construct(
+        private AdminAttendanceService $adminAttendanceService
+    ) {}
+
     /**
      * スタッフ一覧を表示
      *
@@ -16,14 +21,15 @@ class AdminStaffController extends Controller
      */
     public function index(): View
     {
-        $user = User::all();
+        $users = User::all();
 
-        $now = Carbon::now();
+        return view('admin.staff-list', compact('users'));
+    }
 
-        $formattedDate = $now->format('Y年n月j日');
+    public function show(Request $request, User $user): View
+    {
+        $data = $this->adminAttendanceService->getUserMonthlyAttendance($user, $request->input('date'));
 
-        $formattedTime = $now->format('H:i');
-
-        return view('user.attendance-register', compact('user', 'formattedDate', 'formattedTime'));
+        return view('admin.staff-attendance-list', $data);
     }
 }

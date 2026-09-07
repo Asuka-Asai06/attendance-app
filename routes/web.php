@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminAttendanceController;
 use App\Http\Controllers\AdminLogoutController;
+use App\Http\Controllers\AdminStaffController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CorrectionRequestController;
@@ -25,11 +26,11 @@ Route::middleware(['auth', 'admin'])
     ->group(function () {
         Route::post('/logout', [AdminLogoutController::class, 'logout']);
         Route::get('/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendance.list');
-        Route::post('/stamp_correction_request/approve/{correctionRequest}', [CorrectionRequestController::class, 'approve'])->name('stamp_correction_request.approve');
-        // Route::get('/admin/staff/list', [AttendanceController::class, 'index'])->name('attendance');
-        // Route::get('/admin/attendance/staff/{id}', [AttendanceController::class, 'index'])->name('attendance');
+        Route::get('/staff/list', [AdminStaffController::class, 'index'])->name('staff.index');
+        Route::get('/attendance/staff/{user}', [AdminStaffController::class, 'show'])->name('staff.list');
     });
 
+// 共通ルート
 Route::middleware(['auth'])->group(function () {
     Route::get('/stamp_correction_request/list', [CorrectionRequestController::class, 'index'])->name('correction.request.list');
     Route::get('/stamp_correction_request/approve/{correctionRequest}', [CorrectionRequestController::class, 'show'])->name('correction.request.show');
@@ -37,19 +38,3 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/attendance/{attendanceRecord}', [AttendanceController::class, 'show'])->name('attendance.show');
     Route::post('/attendance/{attendanceRecord}', [CorrectionRequestController::class, 'update'])->name('attendance.correction.store');
 });
-/**
-*Route::middleware(['auth', 'admin'])
- *   ->prefix('admin')
- *   ->name('admin.')
-  *  ->group(function () {
-*
-  *      Route::get('/', function () {
-  *          return view('admin.index');
-  *      })->name('index');
-
-  *      Route::get('/attendance/list', [
-  *          AttendanceController::class,
-  *          'index',
-   *     ])->name('attendance.list');
-   * });
- */

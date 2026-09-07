@@ -181,4 +181,54 @@ class AdminAttendanceService
             'hasPendingRequest' => $hasPendingRequest,
         ];
     }
+
+    /**
+     * ユーザーごとの月次勤怠を取得する
+     */
+    public function getUserMonthlyAttendance(User $user, ?string $selectedDate): array
+    {
+        $date = $selectedDate
+            ? Carbon::parse($selectedDate)
+                : today();
+
+        $attendanceRecords = $user->attendanceRecords()
+            ->with('breakTimes')
+            ->whereBetween('clock_in_at', [
+                $date->copy()->startOfMonth(),
+                $date->copy()->endOfMonth(),
+            ])
+            ->orderBy('clock_in_at')
+            ->get();
+
+        $formattedAttendanceRecords = $attendanceRecords
+            ->map(function (AttendanceRecord $attendanceRecord): array {
+                $totalBreakSeconds = $this->calculateBreakSeconds(
+                    $attendanceRecord->breakTimes
+                );
+
+                return [
+                    'id' => $attendanceRecord->id,
+                    'date' => $attendanceRecord->clock_in_at->format('m/d'),
+                    'clock_in' => $attendanceRecord->clock_in_at->format('H:i'),
+                    'clock_out' => $attendanceRecord->clock_out_at?->format('H:i') ?? '',
+                    'total_break_time' => $this->formatDuration(
+                        $totalBreakSeconds
+                    ),
+                    'total_time' => $this->calculateWorkTime(
+                        $attendanceRecord,
+                        $totalBreakSeconds
+                    ),
+                ];
+            })
+            ->all();
+
+        return [
+            'user' => $user,
+            'date' => $date,
+            'previousMonth' => $date->copy()->subMonth()->format('Y-m'),
+            'nextMonth' => $date->copy()->addMonth()->format('Y-m'),
+            'formattedAttendanceRecords' => $formattedAttendanceRecords,
+        ];
+
+    }
 }
