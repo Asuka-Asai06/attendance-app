@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\AttendanceRecord;
+use App\Models\BreakTime;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BreakTime>
+ * @extends Factory<BreakTime>
  */
 class BreakTimeFactory extends Factory
 {
@@ -17,7 +19,9 @@ class BreakTimeFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'attendance_record_id' => AttendanceRecord::factory(),
+            'break_start_at' => now()->setTime(13, 0),
+            'break_end_at' => now()->setTime(14, 0),
         ];
     }
 }

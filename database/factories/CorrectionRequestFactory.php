@@ -2,22 +2,23 @@
 
 namespace Database\Factories;
 
+use App\Models\AttendanceRecord;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CorrectionRequest>
- */
 class CorrectionRequestFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'attendance_record_id' => AttendanceRecord::factory(),
+            'user_id' => User::factory(),
+            'requested_clock_in_at' => now()->setTime(9, 0),
+            'requested_clock_out_at' => now()->setTime(18, 0),
+            'comment' => '出退勤時間を修正してください。',
+            'approval_status' => '承認待ち',
+            'approved_by' => null,
+            'approved_at' => null,
         ];
     }
 }

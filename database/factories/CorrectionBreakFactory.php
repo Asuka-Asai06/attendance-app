@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\CorrectionBreak;
+use App\Models\CorrectionRequest;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CorrectionBreak>
+ * @extends Factory<CorrectionBreak>
  */
 class CorrectionBreakFactory extends Factory
 {
@@ -17,7 +19,9 @@ class CorrectionBreakFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'correction_request_id' => CorrectionRequest::factory(),
+            'break_start_at' => now()->setTime(13, 0),
+            'break_end_at' => now()->setTime(14, 0),
         ];
     }
 }
