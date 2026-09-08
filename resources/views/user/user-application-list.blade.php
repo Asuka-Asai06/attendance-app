@@ -46,13 +46,13 @@
                         <p class="table__description--item">{{ $user->name }}</p>
                     </td>
                     <td class="table__description">
-                        <p class="table__description--item">{{ $application['date'] }}</p>
+                        <p class="table__description--item">{{ $application->attendanceRecord->clock_in_at->format('Y/m/d') }}</p>
                     </td>
                     <td class="table__description">
                         <p class="table__description--item">{{ $application['comment'] ?? 'なし' }}</p>
                     </td>
                     <td class="table__description">
-                        <p class="table__description--item">{{ $application['application_date'] }}</p>
+                        <p class="table__description--item">{{ $application->created_at->format('Y/m/d') }}</p>
                     </td>
                     <td class="table__description">
                         <a class="table__item--detail-link" href="{{ url('/application/' . $application['id']) }}">詳細</a>
@@ -94,13 +94,13 @@
                         <p class="table__description--item">{{ $user->name }}</p>
                     </td>
                     <td class="table__description">
-                        <p class="table__description--item">{{ $application['date'] }}</p>
+                        <p class="table__description--item">{{ $application->attendanceRecord->clock_in_at->format('Y/m/d') }}</p>
                     </td>
                     <td class="table__description">
                         <p class="table__description--item">{{ $application['comment'] ?? 'なし' }}</p>
                     </td>
                     <td class="table__description">
-                        <p class="table__description--item">{{ $application['application_date'] }}</p>
+                        <p class="table__description--item">{{ $application->created_at->format('Y/m/d') }}</p>
                     </td>
                     <td class="table__description">
                         <a class="table__item--detail-link" href="{{ url('/application/' . $application['id']) }}">詳細</a>
