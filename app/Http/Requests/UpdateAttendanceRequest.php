@@ -108,7 +108,7 @@ class UpdateAttendanceRequest extends FormRequest
             $this->addErrorOnce(
                 $validator,
                 'new_clock_in',
-                '出勤時間もしくは退勤時間が不適切な値です'
+                '出勤時間が不適切な値です'
             );
         }
     }

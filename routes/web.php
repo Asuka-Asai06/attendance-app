@@ -8,6 +8,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CorrectionRequestController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', function () {
+    return redirect()->route('attendance.index');
+});
+
 // 管理者認証
 Route::get('/admin/login', [AuthController::class, 'create'])->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.store');
@@ -18,7 +22,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/attendance/list', [AttendanceController::class, 'attendanceList'])->name('attendance.list');
     Route::get('/stamp_correction_request/list', [CorrectionRequestController::class, 'index'])->name('correction.request.list');
     Route::get('/stamp_correction_request/approve/{correctionRequest}', [CorrectionRequestController::class, 'show'])->name('correction.request.show');
-    Route::post('/stamp_correction_request/approve/{correctionRequest}', [CorrectionRequestController::class, 'approve'])->name('correction_request.approve');
+    Route::post('/stamp_correction_request/approve/{correctionRequest}', [CorrectionRequestController::class, 'approve'])->name('correction.request.approve');
     Route::get('/attendance/{attendanceRecord}', [AttendanceController::class, 'show'])->name('attendance.show');
     Route::post('/attendance/{attendanceRecord}', [CorrectionRequestController::class, 'update'])->name('attendance.correction.store');
 });
