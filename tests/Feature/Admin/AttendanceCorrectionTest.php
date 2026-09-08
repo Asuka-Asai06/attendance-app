@@ -241,4 +241,33 @@ class AttendanceCorrectionTest extends TestCase
             'break_end_at' => '2026-09-08 13:30:00',
         ]);
     }
+
+    public function test_一般ユーザーは管理者用承認画面を閲覧できない(): void
+    {
+        $user = User::factory()->create([
+            'admin_status' => false,
+        ]);
+
+        $attendanceRecord = AttendanceRecord::factory()->create([
+            'user_id' => $user->id,
+            'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
+            'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
+        ]);
+
+        $correctionRequest = CorrectionRequest::factory()->create([
+            'user_id' => $user->id,
+            'attendance_record_id' => $attendanceRecord->id,
+            'approval_status' => '承認待ち',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route(
+                'correction.request.show',
+                $correctionRequest
+            ));
+
+        $response->assertOk();
+
+        $response->assertViewIs('user.user-detail');
+    }
 }

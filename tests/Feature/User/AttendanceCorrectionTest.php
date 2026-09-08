@@ -380,4 +380,85 @@ class AttendanceCorrectionTest extends TestCase
         $response->assertSee('12:00');
         $response->assertSee('13:00');
     }
+
+    public function test_他人の勤怠詳細画面にはアクセスできない(): void
+    {
+        $user = User::factory()->create();
+
+        $otherUser = User::factory()->create();
+
+        $attendanceRecord = AttendanceRecord::factory()->create([
+            'user_id' => $otherUser->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('attendance.show', $attendanceRecord));
+
+        $response->assertForbidden();
+    }
+
+    public function test_他人の勤怠を修正できない(): void
+    {
+        $user = User::factory()->create();
+
+        $otherUser = User::factory()->create();
+
+        $attendanceRecord = AttendanceRecord::factory()->create([
+            'user_id' => $otherUser->id,
+            'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
+            'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
+        ]);
+
+        $response = $this->actingAs($user)
+            ->post(
+                route('attendance.correction.store', $attendanceRecord),
+                [
+                    'new_clock_in' => '09:30',
+                    'new_clock_out' => '18:30',
+                    'new_break_in' => [],
+                    'new_break_out' => [],
+                    'comment' => '他人の勤怠を修正しようとしています。',
+                ]
+            );
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseHas('attendance_records', [
+            'id' => $attendanceRecord->id,
+            'user_id' => $otherUser->id,
+            'clock_in_at' => '2026-09-08 09:00:00',
+            'clock_out_at' => '2026-09-08 18:00:00',
+        ]);
+    }
+
+    public function test_他人の修正申請詳細を閲覧できない(): void
+    {
+        $user = User::factory()->create([
+            'admin_status' => false,
+        ]);
+
+        $otherUser = User::factory()->create([
+            'admin_status' => false,
+        ]);
+
+        $attendanceRecord = AttendanceRecord::factory()->create([
+            'user_id' => $otherUser->id,
+            'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
+            'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
+        ]);
+
+        $correctionRequest = CorrectionRequest::factory()->create([
+            'user_id' => $otherUser->id,
+            'attendance_record_id' => $attendanceRecord->id,
+            'approval_status' => '承認待ち',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route(
+                'correction.request.show',
+                $correctionRequest
+            ));
+
+        $response->assertForbidden();
+    }
 }

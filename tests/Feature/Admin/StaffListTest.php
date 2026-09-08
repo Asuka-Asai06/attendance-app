@@ -191,4 +191,16 @@ class StaffListTest extends TestCase
         $response->assertSee('09:00');
         $response->assertSee('18:00');
     }
+
+    public function test_一般ユーザーはスタッフ一覧を閲覧できない(): void
+    {
+        $user = User::factory()->create([
+            'admin_status' => false,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('admin.staff.index'));
+
+        $response->assertForbidden();
+    }
 }

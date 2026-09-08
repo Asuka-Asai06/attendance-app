@@ -160,20 +160,20 @@ class BreakTest extends TestCase
 
     public function test_休憩時刻が勤怠一覧画面で確認できる(): void
     {
-        $user = User::factory()->create();
-
-        AttendanceRecord::factory()->create([
-            'user_id' => $user->id,
-            'clock_in_at' => now()->setTime(9, 0),
-            'clock_out_at' => null,
-        ]);
-
         Carbon::setTestNow(
             Carbon::create(2026, 9, 8, 12, 0, 0)
         );
 
+        $user = User::factory()->create();
+
+        AttendanceRecord::factory()->create([
+            'user_id' => $user->id,
+            'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0, 0),
+            'clock_out_at' => null,
+        ]);
+
         $this->actingAs($user)
-            ->post('/attendance', [
+            ->post(route('attendance.store'), [
                 'action' => 'break_in',
             ]);
 
@@ -182,12 +182,12 @@ class BreakTest extends TestCase
         );
 
         $this->actingAs($user)
-            ->post('/attendance', [
+            ->post(route('attendance.store'), [
                 'action' => 'break_out',
             ]);
 
         $response = $this->actingAs($user)
-            ->get('/attendance/list');
+            ->get(route('attendance.list'));
 
         $response->assertOk();
         $response->assertSee('1:00');

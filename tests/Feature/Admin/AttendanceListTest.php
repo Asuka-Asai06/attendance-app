@@ -121,4 +121,16 @@ class AttendanceListTest extends TestCase
 
         $response->assertSee('2026年09月09日');
     }
+
+    public function test_一般ユーザーは管理者勤怠一覧を閲覧できない(): void
+    {
+        $user = User::factory()->create([
+            'admin_status' => false,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('admin.attendance.list'));
+
+        $response->assertForbidden();
+    }
 }
