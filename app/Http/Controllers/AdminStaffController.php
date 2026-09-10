@@ -20,7 +20,9 @@ class AdminStaffController extends Controller
      */
     public function index(): View
     {
-        $users = User::all();
+        $users = User::query()
+            ->where('admin_status', false)
+            ->get();
 
         return view('admin.staff-list', compact('users'));
     }
