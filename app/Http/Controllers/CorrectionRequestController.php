@@ -97,7 +97,7 @@ class CorrectionRequestController extends Controller
             );
         }
 
-        return redirect()->route('attendance.show', $attendanceRecord);
+        return redirect()->route('correction.request.list');
     }
 
     /**
