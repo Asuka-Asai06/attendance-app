@@ -16,7 +16,7 @@ Route::get('/', function () {
 Route::get('/admin/login', [AuthController::class, 'create'])->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.store');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/list', [AttendanceController::class, 'attendanceList'])->name('attendance.list');

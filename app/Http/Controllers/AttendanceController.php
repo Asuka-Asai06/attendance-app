@@ -73,7 +73,8 @@ class AttendanceController extends Controller
      * 勤怠詳細を表示する。
      *
      * 一般ユーザーの場合は一般ユーザー用画面を表示し、
-     * 管理者の場合は管理者用画面を表示する。
+     * 管理者の場合は申請中であれば一般ユーザー用画面を、
+     * そうでなければ管理者用画面を表示する。
      *
      * @return View 勤怠詳細画面
      */
@@ -83,10 +84,27 @@ class AttendanceController extends Controller
 
         $this->authorize('view', $attendanceRecord);
 
-        if ($user->admin_status) {
-            return view('admin.admin-detail', $this->adminAttendanceService->getAttendanceDetail($attendanceRecord));
+        $hasPendingApplication = $attendanceRecord
+            ->correctionRequests()
+            ->where('approval_status', '承認待ち')
+            ->exists();
+
+        if ($hasPendingApplication) {
+            return view('user.user-detail', $this->attendanceService->getAttendanceDetail(
+                $user,
+                $attendanceRecord
+            ));
         }
 
-        return view('user.user-detail', $this->attendanceService->getAttendanceDetail($user, $attendanceRecord));
+        if ($user->admin_status) {
+            return view('admin.admin-detail', $this->adminAttendanceService->getAttendanceDetail(
+                $attendanceRecord
+            ));
+        }
+
+        return view('user.user-detail', $this->attendanceService->getAttendanceDetail(
+            $user,
+            $attendanceRecord
+        ));
     }
 }

@@ -45,13 +45,13 @@ class UpdateAttendanceRequest extends FormRequest
     {
         return [
             'new_clock_in.required' => '出勤時間を入力してください',
-            'new_clock_in.date_format' => '出勤時間は「時:分」（例：09:30）の形式で入力してください',
+            'new_clock_in.date_format' => '出勤時間の形式が正しくありません',
 
             'new_clock_out.required' => '退勤時間を入力してください',
-            'new_clock_out.date_format' => '退勤時間は「時:分」（例：09:30）の形式で入力してください',
+            'new_clock_out.date_format' => '退勤時間の形式が正しくありません',
 
-            'new_break_in.*.date_format' => '休憩時間は「時:分」（例：09:30）の形式で入力してください',
-            'new_break_out.*.date_format' => '休憩時間は「時:分」（例：09:30）の形式で入力してください',
+            'new_break_in.*.date_format' => '休憩時間の形式が正しくありません',
+            'new_break_out.*.date_format' => '休憩時間の形式が正しくありません',
 
             'comment.required' => '備考を記入してください',
             'comment.string' => '備考の形式が正しくありません',
