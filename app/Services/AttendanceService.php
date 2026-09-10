@@ -112,7 +112,6 @@ class AttendanceService
      */
     public function getAttendanceDetail(User $user, AttendanceRecord $attendanceRecord): array
     {
-        // 承認待ちの修正申請を取得
         $attendanceRecord->load([
             'breakTimes',
             'correctionRequests' => function ($query) {
@@ -124,17 +123,9 @@ class AttendanceService
 
         $application = $attendanceRecord->correctionRequests->first();
 
-        // 修正申請中の場合は、申請した日時・休憩時間を表示する
-        if ($application) {
-            $clockIn = $application->requested_clock_in_at;
-            $clockOut = $application->requested_clock_out_at;
-            $breakTimes = $application->breakTimes;
-        } else {
-            // 修正申請がない場合は、元の勤怠情報を表示する
-            $clockIn = $attendanceRecord->clock_in_at;
-            $clockOut = $attendanceRecord->clock_out_at;
-            $breakTimes = $attendanceRecord->breakTimes;
-        }
+        $clockIn = $attendanceRecord->clock_in_at;
+        $clockOut = $attendanceRecord->clock_out_at;
+        $breakTimes = $attendanceRecord->breakTimes;
 
         return [
             'user' => $user,

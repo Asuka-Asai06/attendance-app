@@ -377,8 +377,8 @@ class AttendanceCorrectionTest extends TestCase
             );
 
         $response->assertOk();
-        $response->assertSee('12:00');
-        $response->assertSee('13:00');
+        $response->assertSee('09:00');
+        $response->assertSee('18:00');
     }
 
     public function test_他人の勤怠詳細画面にはアクセスできない(): void
