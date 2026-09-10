@@ -156,7 +156,7 @@ class AttendanceCorrectionTest extends TestCase
             ]);
 
         $response->assertRedirect(
-            route('attendance.show', $attendanceRecord)
+            route('correction.request.list')
         );
 
         $this->assertDatabaseHas('correction_requests', [
