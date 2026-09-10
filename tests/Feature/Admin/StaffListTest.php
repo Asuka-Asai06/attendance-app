@@ -203,4 +203,92 @@ class StaffListTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_指定したスタッフの指定月の勤怠情報をcsv出力できる(): void
+    {
+        $admin = User::factory()->create([
+            'admin_status' => true,
+        ]);
+
+        $user = User::factory()->create([
+            'name' => 'テストユーザー',
+            'admin_status' => false,
+        ]);
+
+        AttendanceRecord::factory()->create([
+            'user_id' => $user->id,
+            'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
+            'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
+        ]);
+
+        AttendanceRecord::factory()->create([
+            'user_id' => $user->id,
+            'clock_in_at' => Carbon::create(2026, 9, 9, 9, 30),
+            'clock_out_at' => Carbon::create(2026, 9, 9, 18, 30),
+        ]);
+
+        AttendanceRecord::factory()->create([
+            'user_id' => $user->id,
+            'clock_in_at' => Carbon::create(2026, 8, 8, 9, 0),
+            'clock_out_at' => Carbon::create(2026, 8, 8, 18, 0),
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post(
+                route('admin.staff.export', $user),
+                [
+                    'year_month' => '2026-09',
+                ]
+            );
+
+        $response->assertOk();
+
+        $response->assertHeader(
+            'Content-Type',
+            'text/csv; charset=UTF-8'
+        );
+
+        $contentDisposition = $response->headers->get(
+            'Content-Disposition'
+        );
+
+        $this->assertNotNull($contentDisposition);
+
+        $this->assertStringContainsString(
+            'filename*=utf-8\'\'',
+            $contentDisposition
+        );
+
+        $this->assertStringContainsString(
+            rawurlencode('テストユーザー_2026-09_勤怠一覧.csv'),
+            $contentDisposition
+        );
+
+        $content = $response->streamedContent();
+
+        $this->assertStringStartsWith(
+            "\xEF\xBB\xBF",
+            $content
+        );
+
+        $this->assertStringContainsString(
+            '日付,出勤,退勤,休憩,合計',
+            $content
+        );
+
+        $this->assertStringContainsString(
+            '09/08,09:00,18:00',
+            $content
+        );
+
+        $this->assertStringContainsString(
+            '09/09,09:30,18:30',
+            $content
+        );
+
+        $this->assertStringNotContainsString(
+            '08/08',
+            $content
+        );
+    }
 }
