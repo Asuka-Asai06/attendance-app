@@ -30,6 +30,7 @@ class StatusTest extends TestCase
 
         AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => now()->toDateString(),
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => null,
         ]);
@@ -48,6 +49,7 @@ class StatusTest extends TestCase
 
         $attendance = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => now()->toDateString(),
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => null,
         ]);
@@ -72,6 +74,7 @@ class StatusTest extends TestCase
 
         AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => now()->toDateString(),
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => now()->setTime(17, 0),
         ]);

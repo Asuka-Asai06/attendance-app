@@ -25,6 +25,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
@@ -59,6 +60,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
@@ -91,6 +93,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
@@ -127,6 +130,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
@@ -145,7 +149,8 @@ class AttendanceDetailTest extends TestCase
                         '19:00',
                     ],
                     'comment' => '休憩時間を修正します。',
-                ]);
+                ]
+            );
 
         $response->assertSessionHasErrors([
             'new_break_out.0' => '休憩時間もしくは退勤時間が不適切な値です',
@@ -162,6 +167,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
@@ -169,13 +175,15 @@ class AttendanceDetailTest extends TestCase
         $response = $this->actingAs($admin)
             ->from(route('attendance.show', $attendanceRecord))
             ->post(
-                route('attendance.correction.store', $attendanceRecord), [
+                route('attendance.correction.store', $attendanceRecord),
+                [
                     'new_clock_in' => '09:00',
                     'new_clock_out' => '18:00',
                     'new_break_in' => [],
                     'new_break_out' => [],
                     'comment' => '',
-                ]);
+                ]
+            );
 
         $response->assertSessionHasErrors([
             'comment' => '備考を記入してください',

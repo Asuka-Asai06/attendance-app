@@ -14,10 +14,13 @@ class AttendanceRecordFactory extends Factory
      */
     public function definition(): array
     {
+        $date = now();
+
         return [
             'user_id' => User::factory(),
-            'clock_in_at' => now()->setTime(9, 0),
-            'clock_out_at' => now()->setTime(18, 0),
+            'date' => $date->toDateString(),
+            'clock_in_at' => $date->copy()->setTime(9, 0),
+            'clock_out_at' => $date->copy()->setTime(18, 0),
         ];
 
     }

@@ -37,13 +37,10 @@ class UpdateAttendanceAction
         }
 
         return DB::transaction(function () use (
-
             $attendanceRecord,
             $data
         ): CorrectionRequest {
-            $date = $attendanceRecord
-                ->clock_in_at
-                ->format('Y-m-d');
+            $date = $data['date'];
 
             $correctionRequest = CorrectionRequest::create([
                 'attendance_record_id' => $attendanceRecord->id,
@@ -68,8 +65,11 @@ class UpdateAttendanceAction
             );
 
             $attendanceRecord->update([
-                'clock_in_at' => $correctionRequest->requested_clock_in_at,
-                'clock_out_at' => $correctionRequest->requested_clock_out_at,
+                'date' => $date,
+                'clock_in_at' => $correctionRequest
+                    ->requested_clock_in_at,
+                'clock_out_at' => $correctionRequest
+                    ->requested_clock_out_at,
             ]);
 
             $attendanceRecord->breakTimes()->delete();

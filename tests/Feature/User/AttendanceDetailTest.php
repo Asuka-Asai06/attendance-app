@@ -21,6 +21,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => now()->toDateString(),
         ]);
 
         $response = $this->actingAs($user)
@@ -43,6 +44,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-05',
             'clock_in_at' => Carbon::create(2026, 9, 5, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 5, 18, 0),
         ]);
@@ -61,6 +63,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-05',
             'clock_in_at' => Carbon::create(2026, 9, 5, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 5, 18, 0),
         ]);
@@ -80,6 +83,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-05',
             'clock_in_at' => Carbon::create(2026, 9, 5, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 5, 18, 0),
         ]);

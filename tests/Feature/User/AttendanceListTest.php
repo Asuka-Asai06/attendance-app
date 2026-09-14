@@ -24,6 +24,7 @@ class AttendanceListTest extends TestCase
 
         $attendanceRecord1 = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-01',
             'clock_in_at' => Carbon::create(2026, 9, 1, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 1, 18, 0),
         ]);
@@ -36,6 +37,7 @@ class AttendanceListTest extends TestCase
 
         $attendanceRecord2 = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-02',
             'clock_in_at' => Carbon::create(2026, 9, 2, 9, 30),
             'clock_out_at' => Carbon::create(2026, 9, 2, 18, 30),
         ]);
@@ -48,6 +50,7 @@ class AttendanceListTest extends TestCase
 
         AttendanceRecord::factory()->create([
             'user_id' => $otherUser->id,
+            'date' => '2026-09-03',
             'clock_in_at' => Carbon::create(2026, 9, 3, 10, 0),
             'clock_out_at' => Carbon::create(2026, 9, 3, 19, 0),
         ]);
@@ -135,6 +138,7 @@ class AttendanceListTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => now()->toDateString(),
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => now()->setTime(18, 0),
         ]);

@@ -31,12 +31,14 @@ class AttendanceCorrectionTest extends TestCase
 
         $attendanceRecord1 = AttendanceRecord::factory()->create([
             'user_id' => $user1->id,
+            'date' => '2026-09-05',
             'clock_in_at' => Carbon::create(2026, 9, 5, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 5, 18, 0),
         ]);
 
         $attendanceRecord2 = AttendanceRecord::factory()->create([
             'user_id' => $user2->id,
+            'date' => '2026-09-06',
             'clock_in_at' => Carbon::create(2026, 9, 6, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 6, 18, 0),
         ]);
@@ -83,12 +85,14 @@ class AttendanceCorrectionTest extends TestCase
 
         $attendanceRecord1 = AttendanceRecord::factory()->create([
             'user_id' => $user1->id,
+            'date' => '2026-09-05',
             'clock_in_at' => Carbon::create(2026, 9, 5, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 5, 18, 0),
         ]);
 
         $attendanceRecord2 = AttendanceRecord::factory()->create([
             'user_id' => $user2->id,
+            'date' => '2026-09-06',
             'clock_in_at' => Carbon::create(2026, 9, 6, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 6, 18, 0),
         ]);
@@ -133,6 +137,7 @@ class AttendanceCorrectionTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
@@ -180,6 +185,7 @@ class AttendanceCorrectionTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
@@ -228,6 +234,7 @@ class AttendanceCorrectionTest extends TestCase
 
         $this->assertDatabaseHas('attendance_records', [
             'id' => $attendanceRecord->id,
+            'date' => '2026-09-08',
             'clock_in_at' => '2026-09-08 09:30:00',
             'clock_out_at' => '2026-09-08 18:30:00',
         ]);
@@ -247,6 +254,7 @@ class AttendanceCorrectionTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);

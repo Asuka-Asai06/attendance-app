@@ -24,11 +24,10 @@ class AttendanceRecordController extends Controller
      *
      * @param  IndexAttendanceRecordRequest  $request  検索条件を含むリクエスト
      */
-    public function index(IndexAttendanceRecordRequest $request, AttendanceRecordService $attendanceRecordService): AnonymousResourceCollection
+    public function index(IndexAttendanceRecordRequest $request): AnonymousResourceCollection
     {
-        $attendanceRecords = $attendanceRecordService->getAttendanceRecords(
-            $request->validated()
-        );
+        $attendanceRecords = $this->attendanceRecordService
+            ->getAttendanceRecords($request->validated());
 
         return AttendanceRecordResource::collection($attendanceRecords);
     }
@@ -45,15 +44,21 @@ class AttendanceRecordController extends Controller
         $attendanceRecord = $request->user()
             ->attendanceRecords()
             ->create([
-                'clock_in_at' => $validated['date'].' '.$validated['clock_in'],
+                'date' => $validated['date'],
+                'clock_in_at' => $validated['date']
+                    .' '
+                    .$validated['clock_in'],
                 'clock_out_at' => isset($validated['clock_out'])
-                    ? $validated['date'].' '.$validated['clock_out']
+                    ? $validated['date']
+                        .' '
+                        .$validated['clock_out']
                     : null,
             ]);
 
         $attendanceRecord->load([
             'user',
             'breakTimes',
+            'correctionRequests.breakTimes',
         ]);
 
         return (new AttendanceRecordResource($attendanceRecord))
@@ -91,9 +96,14 @@ class AttendanceRecordController extends Controller
         $validated = $request->validated();
 
         $attendanceRecord->update([
-            'clock_in_at' => $validated['date'].' '.$validated['clock_in'],
+            'date' => $validated['date'],
+            'clock_in_at' => $validated['date']
+                .' '
+                .$validated['clock_in'],
             'clock_out_at' => isset($validated['clock_out'])
-                ? $validated['date'].' '.$validated['clock_out']
+                ? $validated['date']
+                    .' '
+                    .$validated['clock_out']
                 : null,
         ]);
 

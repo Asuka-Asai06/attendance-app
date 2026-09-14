@@ -20,8 +20,11 @@ class AttendanceAction
             throw new RuntimeException('すでに出勤しています');
         }
 
+        $now = Carbon::now();
+
         return $user->attendanceRecords()->create([
-            'clock_in_at' => Carbon::now(),
+            'date' => $now->toDateString(),
+            'clock_in_at' => $now,
         ]);
     }
 
@@ -111,8 +114,8 @@ class AttendanceAction
     private function getTodayAttendance(User $user): ?AttendanceRecord
     {
         return $user->attendanceRecords()
-            ->whereDate('clock_in_at', today())
-            ->latest('clock_in_at')
+            ->whereDate('date', today())
+            ->latest('date')
             ->first();
     }
 

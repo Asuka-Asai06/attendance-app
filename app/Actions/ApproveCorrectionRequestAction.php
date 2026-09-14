@@ -27,7 +27,6 @@ class ApproveCorrectionRequestAction
         }
 
         return DB::transaction(function () use (
-
             $correctionRequest
         ): CorrectionRequest {
             $correctionRequest->load([
@@ -38,8 +37,13 @@ class ApproveCorrectionRequestAction
             $attendanceRecord = $correctionRequest->attendanceRecord;
 
             $attendanceRecord->update([
-                'clock_in_at' => $correctionRequest->requested_clock_in_at,
-                'clock_out_at' => $correctionRequest->requested_clock_out_at,
+                'date' => $correctionRequest
+                    ->requested_clock_in_at
+                    ->toDateString(),
+                'clock_in_at' => $correctionRequest
+                    ->requested_clock_in_at,
+                'clock_out_at' => $correctionRequest
+                    ->requested_clock_out_at,
             ]);
 
             $attendanceRecord->breakTimes()->delete();

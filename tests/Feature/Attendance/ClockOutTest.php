@@ -25,6 +25,7 @@ class ClockOutTest extends TestCase
 
         AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => null,
         ]);
@@ -68,6 +69,7 @@ class ClockOutTest extends TestCase
 
         AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => null,
         ]);
@@ -105,6 +107,7 @@ class ClockOutTest extends TestCase
 
         AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => now()->toDateString(),
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => now()->setTime(18, 0),
         ]);
@@ -135,6 +138,7 @@ class ClockOutTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => now()->toDateString(),
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => null,
         ]);
