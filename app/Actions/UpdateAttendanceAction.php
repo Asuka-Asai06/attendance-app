@@ -23,12 +23,8 @@ class UpdateAttendanceAction
      *
      * @throws RuntimeException 承認待ちの修正申請が存在する場合
      */
-    public function execute(
-        User $admin,
-        AttendanceRecord $attendanceRecord,
-        array $data
-    ): CorrectionRequest {
-        // 承認待ちの修正申請がある場合は更新できない
+    public function execute(User $admin, AttendanceRecord $attendanceRecord, array $data): CorrectionRequest
+    {
         $hasPendingRequest = $attendanceRecord
             ->correctionRequests()
             ->where('approval_status', '承認待ち')
@@ -41,7 +37,7 @@ class UpdateAttendanceAction
         }
 
         return DB::transaction(function () use (
-            $admin,
+
             $attendanceRecord,
             $data
         ): CorrectionRequest {
@@ -49,7 +45,6 @@ class UpdateAttendanceAction
                 ->clock_in_at
                 ->format('Y-m-d');
 
-            // 1. 修正申請を作成する
             $correctionRequest = CorrectionRequest::create([
                 'attendance_record_id' => $attendanceRecord->id,
                 'user_id' => $attendanceRecord->user_id,
@@ -63,27 +58,22 @@ class UpdateAttendanceAction
                 ),
                 'comment' => $data['comment'],
                 'approval_status' => '承認済み',
-                'approved_by' => $admin->id,
                 'approved_at' => now(),
             ]);
 
-            // 2. 修正申請に紐づく休憩を作成する
             $this->createCorrectionBreaks(
                 $correctionRequest,
                 $date,
                 $data
             );
 
-            // 3. 修正申請の内容を勤怠へ反映する
             $attendanceRecord->update([
                 'clock_in_at' => $correctionRequest->requested_clock_in_at,
                 'clock_out_at' => $correctionRequest->requested_clock_out_at,
             ]);
 
-            // 4. 既存の休憩を削除する
             $attendanceRecord->breakTimes()->delete();
 
-            // 5. 修正申請の休憩を勤怠へ反映する
             $this->createAttendanceBreaks(
                 $attendanceRecord,
                 $correctionRequest
@@ -94,31 +84,26 @@ class UpdateAttendanceAction
     }
 
     /**
-     * 日付と時刻から日時を作成する。
+     * 日付と時刻から日時を作成する
      *
      * @param  string  $date  勤怠日
      * @param  string  $time  時刻
      * @return string 日時
      */
-    private function createDateTime(
-        string $date,
-        string $time
-    ): string {
+    private function createDateTime(string $date, string $time): string
+    {
         return "{$date} {$time}:00";
     }
 
     /**
-     * 修正申請に含まれる休憩を作成する。
+     * 修正申請に含まれる休憩を作成する
      *
      * @param  CorrectionRequest  $correctionRequest  修正申請
      * @param  string  $date  勤怠日
      * @param  array  $data  バリデーション済みの入力データ
      */
-    private function createCorrectionBreaks(
-        CorrectionRequest $correctionRequest,
-        string $date,
-        array $data
-    ): void {
+    private function createCorrectionBreaks(CorrectionRequest $correctionRequest, string $date, array $data): void
+    {
         foreach ($data['new_break_in'] ?? [] as $index => $breakIn) {
             $breakOut = $data['new_break_out'][$index] ?? null;
 
@@ -140,15 +125,13 @@ class UpdateAttendanceAction
     }
 
     /**
-     * 修正申請の休憩を勤怠に反映する。
+     * 修正申請の休憩を勤怠に反映する
      *
      * @param  AttendanceRecord  $attendanceRecord  勤怠記録
      * @param  CorrectionRequest  $correctionRequest  修正申請
      */
-    private function createAttendanceBreaks(
-        AttendanceRecord $attendanceRecord,
-        CorrectionRequest $correctionRequest
-    ): void {
+    private function createAttendanceBreaks(AttendanceRecord $attendanceRecord, CorrectionRequest $correctionRequest): void
+    {
         foreach ($correctionRequest->breakTimes as $breakTime) {
             $attendanceRecord->breakTimes()->create([
                 'break_start_at' => $breakTime->break_start_at,

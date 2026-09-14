@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminStaffController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CorrectionRequestController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,6 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/stamp_correction_request/list', [CorrectionRequestController::class, 'index'])->name('correction.request.list');
     Route::get('/stamp_correction_request/approve/{correctionRequest}', [CorrectionRequestController::class, 'show'])->name('correction.request.show');
     Route::post('/stamp_correction_request/approve/{correctionRequest}', [CorrectionRequestController::class, 'approve'])->name('correction.request.approve');
+    Route::get('/attendance/report', [ReportController::class, 'index'])->name('attendance.report');
     Route::get('/attendance/{attendanceRecord}', [AttendanceController::class, 'show'])->name('attendance.show');
     Route::post('/attendance/{attendanceRecord}', [CorrectionRequestController::class, 'update'])->name('attendance.correction.store');
 });

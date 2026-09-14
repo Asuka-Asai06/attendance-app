@@ -27,7 +27,7 @@ class ApproveCorrectionRequestAction
         }
 
         return DB::transaction(function () use (
-            $admin,
+
             $correctionRequest
         ): CorrectionRequest {
             $correctionRequest->load([
@@ -53,7 +53,6 @@ class ApproveCorrectionRequestAction
 
             $correctionRequest->update([
                 'approval_status' => '承認済み',
-                'approved_by' => $admin->id,
                 'approved_at' => now(),
             ]);
 
