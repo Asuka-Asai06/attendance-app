@@ -26,4 +26,15 @@ class AttendanceRecordPolicy
         return $user->admin_status
             || $user->id === $attendanceRecord->user_id;
     }
+
+    /**
+     * 管理者以外は他人の勤怠を削除することはできない
+     *
+     * @param  AttendanceRecord  $attendanceRecord  削除対象の勤怠
+     */
+    public function delete(User $user, AttendanceRecord $attendanceRecord): bool
+    {
+        return $user->admin_status
+            || $user->id === $attendanceRecord->user_id;
+    }
 }
