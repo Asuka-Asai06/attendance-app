@@ -18,7 +18,6 @@ class CorrectionRequest extends Model
         'requested_clock_out_at',
         'comment',
         'approval_status',
-        'approved_by',
         'approved_at',
     ];
 
@@ -42,14 +41,6 @@ class CorrectionRequest extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * 修正申請を承認した管理者ユーザー
-     */
-    public function approver(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'approved_by');
     }
 
     /**

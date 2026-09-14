@@ -17,7 +17,6 @@ class CorrectionRequestFactory extends Factory
             'requested_clock_out_at' => now()->setTime(18, 0),
             'comment' => '修正してください。',
             'approval_status' => '承認待ち',
-            'approved_by' => null,
             'approved_at' => null,
         ];
     }

@@ -75,7 +75,6 @@ erDiagram
         timestamp requested_clock_out_at
         string comment
         string approval_status
-        bigint approved_by FK
         timestamp approved_at
         timestamp created_at
         timestamp updated_at

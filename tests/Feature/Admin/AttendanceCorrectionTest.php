@@ -98,7 +98,6 @@ class AttendanceCorrectionTest extends TestCase
             'user_id' => $user1->id,
             'approval_status' => '承認済み',
             'comment' => '1件目の承認済み申請です。',
-            'approved_by' => $admin->id,
             'approved_at' => Carbon::create(2026, 9, 8, 10, 0),
         ]);
 
@@ -107,7 +106,6 @@ class AttendanceCorrectionTest extends TestCase
             'user_id' => $user2->id,
             'approval_status' => '承認済み',
             'comment' => '2件目の承認済み申請です。',
-            'approved_by' => $admin->id,
             'approved_at' => Carbon::create(2026, 9, 8, 11, 0),
         ]);
 
@@ -222,7 +220,6 @@ class AttendanceCorrectionTest extends TestCase
         $this->assertDatabaseHas('correction_requests', [
             'id' => $correctionRequest->id,
             'approval_status' => '承認済み',
-            'approved_by' => $admin->id,
         ]);
 
         $this->assertNotNull(

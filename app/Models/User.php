@@ -52,17 +52,6 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * ユーザーが承認した勤怠修正申請。
-     */
-    public function approvedCorrectionRequests(): HasMany
-    {
-        return $this->hasMany(
-            CorrectionRequest::class,
-            'approved_by'
-        );
-    }
-
-    /**
      * 現在の勤怠状態を取得
      *
      * @return Attribute<string, never>
