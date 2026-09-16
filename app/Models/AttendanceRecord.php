@@ -16,6 +16,7 @@ class AttendanceRecord extends Model
         'date',
         'clock_in_at',
         'clock_out_at',
+        'comment',
     ];
 
     protected $casts = [
@@ -119,15 +120,5 @@ class AttendanceRecord extends Model
             intdiv($totalMinutes, 60),
             $totalMinutes % 60
         );
-    }
-
-    /**
-     * 修正申請のコメントを取得する
-     */
-    public function getCommentAttribute(): ?string
-    {
-        return $this->correctionRequests
-            ->sortByDesc('created_at')
-            ->first()?->comment;
     }
 }

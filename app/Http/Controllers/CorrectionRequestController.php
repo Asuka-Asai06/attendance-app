@@ -18,9 +18,9 @@ class CorrectionRequestController extends Controller
 {
     public function __construct(
         private AttendanceService $attendanceService,
+        private UpdateAttendanceAction $updateAttendanceAction,
         private CorrectionRequestAction $correctionRequestAction,
         private CorrectionRequestService $correctionRequestService,
-        private UpdateAttendanceAction $updateAttendanceAction,
         private ApproveCorrectionRequestAction $approveCorrectionRequestAction
     ) {}
 
@@ -69,33 +69,33 @@ class CorrectionRequestController extends Controller
     /**
      * 勤怠を修正する。
      *
-     * 一般ユーザーの場合は修正申請を作成する。
-     * 管理者ユーザーの場合は修正申請を作成したうえで勤怠に反映する。
+     * 管理者は勤怠を直接修正し、
+     * 一般ユーザーは修正申請を作成する。
      *
      * @param  UpdateAttendanceRequest  $request  バリデーション済みの勤怠修正データ
      * @param  AttendanceRecord  $attendanceRecord  修正対象の勤怠記録
+     * @return RedirectResponse 処理後の画面へリダイレクト
      */
     public function update(UpdateAttendanceRequest $request, AttendanceRecord $attendanceRecord): RedirectResponse
     {
-        $user = $request->user();
-
         $this->authorize('update', $attendanceRecord);
 
-        // 管理者ユーザーの場合
+        $user = $request->user();
+
         if ($user->admin_status) {
             $this->updateAttendanceAction->execute(
-                $user,
                 $attendanceRecord,
                 $request->validated()
             );
-            // 一般ユーザーの場合
-        } else {
-            $this->correctionRequestAction->execute(
-                $user,
-                $attendanceRecord,
-                $request->validated()
-            );
+
+            return redirect()->route('admin.attendance.list');
         }
+
+        $this->correctionRequestAction->execute(
+            $user,
+            $attendanceRecord,
+            $request->validated()
+        );
 
         return redirect()->route('correction.request.list');
     }
