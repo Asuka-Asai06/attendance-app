@@ -50,7 +50,7 @@ class UpdateAttendanceRequest extends FormRequest
 
             'new_clock_out.required' => '退勤時間を入力してください',
             'new_clock_out.date_format' => '退勤時間はHH:MM形式で入力してください',
-            'new_clock_out.after' => '退勤時間は出勤時間より後にしてください',
+            'new_clock_out.after' => '出勤時間もしくは退勤時間が不適切な値です',
 
             'new_break_in.array' => '休憩開始時間の形式が不正です',
             'new_break_in.*.date_format' => '休憩開始時間はHH:MM形式で入力してください',
