@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\AttendanceRecord;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 
 class AttendanceService
 {
@@ -20,31 +19,22 @@ class AttendanceService
 
         $attendanceRecords = $user->attendanceRecords()
             ->with('breakTimes')
-            ->whereBetween('clock_in_at', [
+            ->whereBetween('date', [
                 $date->copy()->startOfMonth(),
                 $date->copy()->endOfMonth(),
             ])
-            ->orderBy('clock_in_at')
+            ->orderBy('date')
             ->get();
 
         $formattedAttendanceRecords = $attendanceRecords
             ->map(function (AttendanceRecord $attendanceRecord): array {
-                $totalBreakSeconds = $this->calculateBreakSeconds(
-                    $attendanceRecord->breakTimes
-                );
-
                 return [
                     'id' => $attendanceRecord->id,
-                    'date' => $attendanceRecord->clock_in_at->format('m/d'),
+                    'date' => Carbon::parse($attendanceRecord->date)->format('m/d'),
                     'clock_in' => $attendanceRecord->clock_in_at->format('H:i'),
                     'clock_out' => $attendanceRecord->clock_out_at?->format('H:i') ?? '',
-                    'total_break_time' => $this->formatDuration(
-                        $totalBreakSeconds
-                    ),
-                    'total_time' => $this->calculateWorkTime(
-                        $attendanceRecord,
-                        $totalBreakSeconds
-                    ),
+                    'total_break_time' => $attendanceRecord->total_break_time,
+                    'total_time' => $attendanceRecord->total_time,
                 ];
             })
             ->all();
@@ -59,52 +49,6 @@ class AttendanceService
                 ->format('Y-m'),
             'formattedAttendanceRecords' => $formattedAttendanceRecords,
         ];
-    }
-
-    /**
-     * 休憩時間の合計秒数を計算する。
-     */
-    private function calculateBreakSeconds(Collection $breakTimes): int
-    {
-        return $breakTimes->sum(function ($breakTime): int {
-            if ($breakTime->break_end_at === null) {
-                return 0;
-            }
-
-            return $breakTime->break_start_at->diffInSeconds(
-                $breakTime->break_end_at
-            );
-        });
-    }
-
-    /**
-     * 実働時間を計算する。
-     */
-    private function calculateWorkTime(AttendanceRecord $attendanceRecord, int $totalBreakSeconds): ?Carbon
-    {
-        if ($attendanceRecord->clock_out_at === null) {
-            return null;
-        }
-
-        $workSeconds = $attendanceRecord->clock_in_at
-            ->diffInSeconds($attendanceRecord->clock_out_at);
-
-        $actualWorkSeconds = $workSeconds - $totalBreakSeconds;
-
-        return $this->formatDuration($actualWorkSeconds);
-    }
-
-    /**
-     * 秒数を時間として扱えるCarbonに変換する。
-     */
-    private function formatDuration(int $seconds): ?Carbon
-    {
-        if ($seconds <= 0) {
-            return null;
-        }
-
-        return Carbon::createFromTime(0, 0, 0)
-            ->addSeconds($seconds);
     }
 
     /**
@@ -131,9 +75,8 @@ class AttendanceService
             'user' => $user,
             'data' => [
                 'id' => $attendanceRecord->id,
-                'year' => $attendanceRecord->clock_in_at->format('Y年'),
-                'date' => $attendanceRecord->clock_in_at->format('m月d日'),
-
+                'year' => Carbon::parse($attendanceRecord->date)->format('Y年'),
+                'date' => Carbon::parse($attendanceRecord->date)->format('m月d日'),
                 'clock_in' => $clockIn?->format('H:i'),
                 'clock_out' => $clockOut?->format('H:i'),
 

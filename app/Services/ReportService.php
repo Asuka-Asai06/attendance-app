@@ -26,11 +26,11 @@ class ReportService
 
         $attendanceRecords = $user->attendanceRecords()
             ->with('breakTimes')
-            ->whereBetween('clock_in_at', [
+            ->whereBetween('date', [
                 $startDate,
                 $endDate,
             ])
-            ->orderBy('clock_in_at')
+            ->orderBy('date')
             ->get();
 
         return [
@@ -104,9 +104,7 @@ class ReportService
 
             $monthRecords = $attendanceRecords->filter(
                 function (AttendanceRecord $attendanceRecord) use ($month): bool {
-                    return $attendanceRecord->clock_in_at->isSameMonth(
-                        $month
-                    );
+                    return Carbon::parse($attendanceRecord->date)->isSameMonth($month);
                 }
             );
 
@@ -123,6 +121,7 @@ class ReportService
                 }
 
                 $workMinutes += $recordWorkMinutes;
+
                 $overtimeMinutes += max(
                     0,
                     $recordWorkMinutes - 8 * 60
@@ -151,9 +150,8 @@ class ReportService
 
         $currentMonthRecords = $attendanceRecords->filter(
             function (AttendanceRecord $attendanceRecord) use ($currentMonth): bool {
-                return $attendanceRecord->clock_in_at->isSameMonth(
-                    $currentMonth
-                );
+                return Carbon::parse($attendanceRecord->date)
+                    ->isSameMonth($currentMonth);
             }
         );
 
@@ -211,20 +209,9 @@ class ReportService
         $workMinutes = $attendanceRecord->clock_in_at
             ->diffInMinutes($attendanceRecord->clock_out_at);
 
-        $breakMinutes = $attendanceRecord->breakTimes->sum(
-            function ($breakTime): int {
-                if ($breakTime->break_end_at === null) {
-                    return 0;
-                }
-
-                return $breakTime->break_start_at
-                    ->diffInMinutes($breakTime->break_end_at);
-            }
-        );
-
         return max(
             0,
-            $workMinutes - $breakMinutes
+            $workMinutes - $attendanceRecord->total_break_minutes
         );
     }
 }

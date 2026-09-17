@@ -46,6 +46,7 @@ class ClockInTest extends TestCase
 
         AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => now()->toDateString(),
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => now()->setTime(18, 0),
         ]);

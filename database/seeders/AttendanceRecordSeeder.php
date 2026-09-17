@@ -44,6 +44,7 @@ class AttendanceRecordSeeder extends Seeder
             foreach (array_slice($weekdays, 0, 15) as $date) {
                 AttendanceRecord::create([
                     'user_id' => $user->id,
+                    'date' => $date->toDateString(),
                     'clock_in_at' => $date->copy()->setTime(9, 0),
                     'clock_out_at' => $date->copy()->setTime(18, 0),
                 ]);
@@ -84,6 +85,7 @@ class AttendanceRecordSeeder extends Seeder
 
             AttendanceRecord::create([
                 'user_id' => $user->id,
+                'date' => $date->toDateString(),
                 'clock_in_at' => $date
                     ->copy()
                     ->setTimeFromTimeString($pattern['clock_in']),
@@ -235,6 +237,7 @@ class AttendanceRecordSeeder extends Seeder
     {
         AttendanceRecord::create([
             'user_id' => $user->id,
+            'date' => $date->toDateString(),
             'clock_in_at' => $date
                 ->copy()
                 ->setTimeFromTimeString($pattern['clock_in']),

@@ -80,31 +80,30 @@ class AttendanceController extends Controller
      */
     public function show(Request $request, AttendanceRecord $attendanceRecord): View
     {
-        $user = $request->user();
-
         $this->authorize('view', $attendanceRecord);
+
+        $user = $request->user();
 
         $hasPendingApplication = $attendanceRecord
             ->correctionRequests()
             ->where('approval_status', '承認待ち')
             ->exists();
 
-        if ($hasPendingApplication) {
-            return view('user.user-detail', $this->attendanceService->getAttendanceDetail(
+        if ($user->admin_status && ! $hasPendingApplication) {
+            return view(
+                'admin.admin-detail',
+                $this->adminAttendanceService->getAttendanceDetail(
+                    $attendanceRecord
+                )
+            );
+        }
+
+        return view(
+            'user.user-detail',
+            $this->attendanceService->getAttendanceDetail(
                 $user,
                 $attendanceRecord
-            ));
-        }
-
-        if ($user->admin_status) {
-            return view('admin.admin-detail', $this->adminAttendanceService->getAttendanceDetail(
-                $attendanceRecord
-            ));
-        }
-
-        return view('user.user-detail', $this->attendanceService->getAttendanceDetail(
-            $user,
-            $attendanceRecord
-        ));
+            )
+        );
     }
 }

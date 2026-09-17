@@ -38,7 +38,7 @@ class CorrectionRequestAction
             $attendanceRecord,
             $data
         ): CorrectionRequest {
-            $date = $attendanceRecord->clock_in_at->format('Y-m-d');
+            $date = $attendanceRecord->date;
 
             $correctionRequest = CorrectionRequest::create([
                 'attendance_record_id' => $attendanceRecord->id,

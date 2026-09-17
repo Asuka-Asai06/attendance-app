@@ -54,8 +54,8 @@ class ExportStaffAttendanceAction
                         $attendanceRecord['date'],
                         $attendanceRecord['clock_in'],
                         $attendanceRecord['clock_out'],
-                        $attendanceRecord['total_break_time']?->format('G:i') ?? '',
-                        $attendanceRecord['total_time']?->format('G:i') ?? '',
+                        $attendanceRecord['total_break_time'] ?? '',
+                        $attendanceRecord['total_time'] ?? '',
                     ]);
                 }
 

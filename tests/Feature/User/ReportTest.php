@@ -27,6 +27,7 @@ class ReportTest extends TestCase
 
         $attendanceRecord1 = AttendanceRecord::create([
             'user_id' => $user->id,
+            'date' => $currentMonth->copy()->setDay(1)->toDateString(),
             'clock_in_at' => $currentMonth->copy()->setDay(1)->setTime(9, 0),
             'clock_out_at' => $currentMonth->copy()->setDay(1)->setTime(18, 0),
         ]);
@@ -39,6 +40,7 @@ class ReportTest extends TestCase
 
         $attendanceRecord2 = AttendanceRecord::create([
             'user_id' => $user->id,
+            'date' => $currentMonth->copy()->setDay(2)->toDateString(),
             'clock_in_at' => $currentMonth->copy()->setDay(2)->setTime(9, 30),
             'clock_out_at' => $currentMonth->copy()->setDay(2)->setTime(18, 0),
         ]);
@@ -51,6 +53,7 @@ class ReportTest extends TestCase
 
         $attendanceRecord3 = AttendanceRecord::create([
             'user_id' => $user->id,
+            'date' => $currentMonth->copy()->setDay(3)->toDateString(),
             'clock_in_at' => $currentMonth->copy()->setDay(3)->setTime(9, 0),
             'clock_out_at' => $currentMonth->copy()->setDay(3)->setTime(20, 0),
         ]);
@@ -133,6 +136,7 @@ class ReportTest extends TestCase
 
         $user1Attendance = AttendanceRecord::create([
             'user_id' => $user1->id,
+            'date' => $currentMonth->copy()->setDay(1)->toDateString(),
             'clock_in_at' => $currentMonth->copy()
                 ->setDay(1)
                 ->setTime(9, 0),
@@ -153,6 +157,7 @@ class ReportTest extends TestCase
 
         $user2Attendance = AttendanceRecord::create([
             'user_id' => $user2->id,
+            'date' => $currentMonth->copy()->setDay(2)->toDateString(),
             'clock_in_at' => $currentMonth->copy()
                 ->setDay(2)
                 ->setTime(9, 0),

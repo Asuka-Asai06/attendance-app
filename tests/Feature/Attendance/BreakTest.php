@@ -18,6 +18,7 @@ class BreakTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => now()->toDateString(),
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => null,
         ]);
@@ -52,6 +53,7 @@ class BreakTest extends TestCase
 
         AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => now()->toDateString(),
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => null,
         ]);
@@ -86,6 +88,7 @@ class BreakTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => now()->toDateString(),
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => null,
         ]);
@@ -125,6 +128,7 @@ class BreakTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => now()->toDateString(),
             'clock_in_at' => now()->setTime(9, 0),
             'clock_out_at' => null,
         ]);
@@ -168,6 +172,7 @@ class BreakTest extends TestCase
 
         AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0, 0),
             'clock_out_at' => null,
         ]);

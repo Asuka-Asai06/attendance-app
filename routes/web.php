@@ -13,10 +13,6 @@ Route::get('/', function () {
     return redirect()->route('attendance.index');
 });
 
-// 管理者認証
-Route::get('/admin/login', [AuthController::class, 'create'])->name('admin.login');
-Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.store');
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
@@ -28,6 +24,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/attendance/{attendanceRecord}', [AttendanceController::class, 'show'])->name('attendance.show');
     Route::post('/attendance/{attendanceRecord}', [CorrectionRequestController::class, 'update'])->name('attendance.correction.store');
 });
+
+// 管理者認証
+Route::get('/admin/login', [AuthController::class, 'create'])->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.store');
 
 // 管理者画面
 Route::middleware(['auth', 'admin'])

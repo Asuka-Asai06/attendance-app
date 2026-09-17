@@ -25,6 +25,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
@@ -59,6 +60,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
@@ -77,7 +79,7 @@ class AttendanceDetailTest extends TestCase
             );
 
         $response->assertSessionHasErrors([
-            'new_clock_in' => '出勤時間が不適切な値です',
+            'new_clock_in' => '出勤時間もしくは退勤時間が不適切な値です',
         ]);
     }
 
@@ -91,6 +93,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
@@ -127,6 +130,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
@@ -145,7 +149,8 @@ class AttendanceDetailTest extends TestCase
                         '19:00',
                     ],
                     'comment' => '休憩時間を修正します。',
-                ]);
+                ]
+            );
 
         $response->assertSessionHasErrors([
             'new_break_out.0' => '休憩時間もしくは退勤時間が不適切な値です',
@@ -162,6 +167,7 @@ class AttendanceDetailTest extends TestCase
 
         $attendanceRecord = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
@@ -169,16 +175,80 @@ class AttendanceDetailTest extends TestCase
         $response = $this->actingAs($admin)
             ->from(route('attendance.show', $attendanceRecord))
             ->post(
-                route('attendance.correction.store', $attendanceRecord), [
+                route('attendance.correction.store', $attendanceRecord),
+                [
                     'new_clock_in' => '09:00',
                     'new_clock_out' => '18:00',
                     'new_break_in' => [],
                     'new_break_out' => [],
                     'comment' => '',
-                ]);
+                ]
+            );
 
         $response->assertSessionHasErrors([
             'comment' => '備考を記入してください',
+        ]);
+    }
+
+    public function test_管理者は勤怠を直接修正できる(): void
+    {
+        $admin = User::factory()->create([
+            'admin_status' => true,
+        ]);
+
+        $user = User::factory()->create([
+            'admin_status' => false,
+        ]);
+
+        $attendanceRecord = AttendanceRecord::factory()->create([
+            'user_id' => $user->id,
+            'date' => '2026-09-10',
+            'clock_in_at' => '2026-09-10 09:00:00',
+            'clock_out_at' => '2026-09-10 18:00:00',
+            'comment' => '修正前の備考',
+        ]);
+
+        $breakTime = $attendanceRecord->breakTimes()->create([
+            'break_start_at' => '2026-09-10 12:00:00',
+            'break_end_at' => '2026-09-10 13:00:00',
+        ]);
+
+        $response = $this->actingAs($admin)->post(
+            route('attendance.correction.store', $attendanceRecord),
+            [
+                'new_clock_in' => '09:30',
+                'new_clock_out' => '18:30',
+                'new_break_in' => [
+                    '12:30',
+                ],
+                'new_break_out' => [
+                    '13:30',
+                ],
+                'comment' => '管理者による勤怠修正',
+            ]
+        );
+
+        $response->assertRedirect(
+            route('admin.attendance.list')
+        );
+
+        $this->assertDatabaseHas('attendance_records', [
+            'id' => $attendanceRecord->id,
+            'user_id' => $user->id,
+            'date' => '2026-09-10',
+            'clock_in_at' => '2026-09-10 09:30:00',
+            'clock_out_at' => '2026-09-10 18:30:00',
+            'comment' => '管理者による勤怠修正',
+        ]);
+
+        $this->assertDatabaseMissing('break_times', [
+            'id' => $breakTime->id,
+        ]);
+
+        $this->assertDatabaseHas('break_times', [
+            'attendance_record_id' => $attendanceRecord->id,
+            'break_start_at' => '2026-09-10 12:30:00',
+            'break_end_at' => '2026-09-10 13:30:00',
         ]);
     }
 }

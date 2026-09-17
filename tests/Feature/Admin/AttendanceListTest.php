@@ -32,12 +32,14 @@ class AttendanceListTest extends TestCase
 
         AttendanceRecord::factory()->create([
             'user_id' => $user1->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 9, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 18, 0),
         ]);
 
         AttendanceRecord::factory()->create([
             'user_id' => $user2->id,
+            'date' => '2026-09-08',
             'clock_in_at' => Carbon::create(2026, 9, 8, 10, 0),
             'clock_out_at' => Carbon::create(2026, 9, 8, 19, 0),
         ]);

@@ -14,9 +14,13 @@ return new class extends Migration
         Schema::create('attendance_records', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->date('date');
             $table->timestamp('clock_in_at');
             $table->timestamp('clock_out_at')->nullable();
+            $table->text('comment')->nullable();
             $table->timestamps();
+
+            $table->unique(['user_id', 'date']);
         });
     }
 
