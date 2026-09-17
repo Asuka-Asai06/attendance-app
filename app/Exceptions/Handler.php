@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
@@ -68,7 +69,7 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (
-            AuthorizationException $e,
+            AuthorizationException|AccessDeniedHttpException $e,
             $request
         ) {
             if ($request->is('api/*')) {
