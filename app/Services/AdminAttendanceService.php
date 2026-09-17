@@ -59,10 +59,10 @@ class AdminAttendanceService
             'attendanceRecord' => [
                 'id' => $attendanceRecord->id,
 
-                'year' => $attendanceRecord->date
+                'year' => Carbon::parse($attendanceRecord->date)
                     ->format('Y年'),
 
-                'date' => $attendanceRecord->date
+                'date' => Carbon::parse($attendanceRecord->date)
                     ->format('m月d日'),
 
                 'clock_in' => $attendanceRecord->clock_in_at
@@ -117,7 +117,7 @@ class AdminAttendanceService
                 return [
                     'id' => $attendanceRecord->id,
 
-                    'date' => $attendanceRecord->date
+                    'date' => Carbon::parse($attendanceRecord->date)
                         ->format('m/d'),
 
                     'clock_in' => $attendanceRecord->clock_in,

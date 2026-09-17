@@ -30,7 +30,7 @@ class AttendanceService
             ->map(function (AttendanceRecord $attendanceRecord): array {
                 return [
                     'id' => $attendanceRecord->id,
-                    'date' => $attendanceRecord->date,
+                    'date' => Carbon::parse($attendanceRecord->date)->format('m/d'),
                     'clock_in' => $attendanceRecord->clock_in_at->format('H:i'),
                     'clock_out' => $attendanceRecord->clock_out_at?->format('H:i') ?? '',
                     'total_break_time' => $attendanceRecord->total_break_time,
