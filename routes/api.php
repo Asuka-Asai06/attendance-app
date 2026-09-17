@@ -12,12 +12,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->as('api.v1.')->group(function () {
-
-    Route::apiResource('attendance-records', AttendanceRecordController::class)
-        ->only(['index', 'show']);
-
+    Route::apiResource('attendance-records', AttendanceRecordController::class)->only(['index', 'show']);
     Route::middleware('auth:sanctum')->group(function () {
-        Route::apiResource('attendance-records', AttendanceRecordController::class)
-            ->only(['store', 'update', 'destroy']);
+        Route::apiResource('attendance-records', AttendanceRecordController::class)->only(['store', 'update', 'destroy']);
     });
 });

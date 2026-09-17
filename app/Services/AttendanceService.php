@@ -30,7 +30,7 @@ class AttendanceService
             ->map(function (AttendanceRecord $attendanceRecord): array {
                 return [
                     'id' => $attendanceRecord->id,
-                    'date' => $attendanceRecord->date->format('m/d'),
+                    'date' => $attendanceRecord->date,
                     'clock_in' => $attendanceRecord->clock_in_at->format('H:i'),
                     'clock_out' => $attendanceRecord->clock_out_at?->format('H:i') ?? '',
                     'total_break_time' => $attendanceRecord->total_break_time,
@@ -75,9 +75,8 @@ class AttendanceService
             'user' => $user,
             'data' => [
                 'id' => $attendanceRecord->id,
-                'year' => $attendanceRecord->date->format('Y年'),
-                'date' => $attendanceRecord->date->format('m月d日'),
-
+                'year' => Carbon::parse($attendanceRecord->date)->format('Y年'),
+                'date' => Carbon::parse($attendanceRecord->date)->format('m月d日'),
                 'clock_in' => $clockIn?->format('H:i'),
                 'clock_out' => $clockOut?->format('H:i'),
 

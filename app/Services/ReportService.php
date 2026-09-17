@@ -104,7 +104,7 @@ class ReportService
 
             $monthRecords = $attendanceRecords->filter(
                 function (AttendanceRecord $attendanceRecord) use ($month): bool {
-                    return $attendanceRecord->date->isSameMonth($month);
+                    return Carbon::parse($attendanceRecord->date)->isSameMonth($month);
                 }
             );
 
@@ -150,7 +150,8 @@ class ReportService
 
         $currentMonthRecords = $attendanceRecords->filter(
             function (AttendanceRecord $attendanceRecord) use ($currentMonth): bool {
-                return $attendanceRecord->date->isSameMonth($currentMonth);
+                return Carbon::parse($attendanceRecord->date)
+                    ->isSameMonth($currentMonth);
             }
         );
 

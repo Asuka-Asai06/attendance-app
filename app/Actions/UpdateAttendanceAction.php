@@ -34,7 +34,7 @@ class UpdateAttendanceAction
             $attendanceRecord,
             $data
         ): AttendanceRecord {
-            $date = $attendanceRecord->date->format('Y-m-d');
+            $date = $attendanceRecord->date;
 
             $attendanceRecord->update([
                 'date' => $date,

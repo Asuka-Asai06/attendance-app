@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Actions\Api\V1\StoreAttendanceAction;
+use App\Actions\Api\V1\UpdateAttendanceAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\IndexAttendanceRecordRequest;
 use App\Http\Requests\Api\V1\StoreAttendanceRecordRequest;
@@ -17,6 +19,8 @@ class AttendanceRecordController extends Controller
 {
     public function __construct(
         private AttendanceRecordService $attendanceRecordService,
+        private UpdateAttendanceAction $updateAttendanceAction,
+        private StoreAttendanceAction $storeAttendanceAction
     ) {}
 
     /**
@@ -35,25 +39,14 @@ class AttendanceRecordController extends Controller
     /**
      * 勤怠を登録する。
      *
-     * @return AttendanceRecordResource 登録した勤怠のリソース
+     * @return JsonResponse 登録した勤怠のjsonレスポンス
      */
     public function store(StoreAttendanceRecordRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-
-        $attendanceRecord = $request->user()
-            ->attendanceRecords()
-            ->create([
-                'date' => $validated['date'],
-                'clock_in_at' => $validated['date']
-                    .' '
-                    .$validated['clock_in'],
-                'clock_out_at' => isset($validated['clock_out'])
-                    ? $validated['date']
-                        .' '
-                        .$validated['clock_out']
-                    : null,
-            ]);
+        $attendanceRecord = $this->storeAttendanceAction->execute(
+            $request->user()->id,
+            $request->validated()
+        );
 
         $attendanceRecord->load([
             'user',
@@ -93,25 +86,10 @@ class AttendanceRecordController extends Controller
     {
         $this->authorize('update', $attendanceRecord);
 
-        $validated = $request->validated();
-
-        $attendanceRecord->update([
-            'date' => $validated['date'],
-            'clock_in_at' => $validated['date']
-                .' '
-                .$validated['clock_in'],
-            'clock_out_at' => isset($validated['clock_out'])
-                ? $validated['date']
-                    .' '
-                    .$validated['clock_out']
-                : null,
-        ]);
-
-        $attendanceRecord->load([
-            'user',
-            'breakTimes',
-            'correctionRequests.breakTimes',
-        ]);
+        $attendanceRecord = $this->updateAttendanceAction->execute(
+            $attendanceRecord,
+            $request->validated()
+        );
 
         return new AttendanceRecordResource($attendanceRecord);
     }
