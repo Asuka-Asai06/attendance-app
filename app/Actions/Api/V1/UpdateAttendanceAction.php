@@ -71,9 +71,14 @@ class UpdateAttendanceAction
             ];
 
             if (isset($break['id'])) {
-                $attendanceRecord->breakTimes()
-                    ->whereKey($break['id'])
-                    ->update($breakData);
+                $breakTime = $attendanceRecord->breakTimes()
+                    ->find($break['id']);
+
+                if ($breakTime === null) {
+                    throw new \RuntimeException('指定された休憩時間が見つかりません。');
+                }
+
+                $breakTime->update($breakData);
 
                 continue;
             }

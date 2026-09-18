@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\UpdateAttendanceAction;
 use App\Services\AdminAttendanceService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -11,7 +10,6 @@ class AdminAttendanceController extends Controller
 {
     public function __construct(
         private AdminAttendanceService $adminAttendanceService,
-        private UpdateAttendanceAction $updateAttendanceAction
     ) {}
 
     /**

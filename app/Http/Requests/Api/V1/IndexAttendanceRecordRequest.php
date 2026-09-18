@@ -44,7 +44,7 @@ class IndexAttendanceRecordRequest extends FormRequest
             'month.string' => '月は YYYY-MM 形式で指定してください。',
             'page.integer' => 'ページ番号は整数で指定してください。',
             'page.min' => 'ページ番号は1以上で指定してください。',
-            'per_page.date_format' => '1ページあたりの件数は整数で指定してください。',
+            'per_page.integer' => '1ページあたりの件数は整数で指定してください。',
             'per_page.min' => '1ページあたりの件数は1以上で指定してください。',
             'per_page.max' => '1ページあたりの件数は100以下で指定してください。',
         ];
