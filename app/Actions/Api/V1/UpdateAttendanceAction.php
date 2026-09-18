@@ -20,25 +20,27 @@ class UpdateAttendanceAction
             $attendanceRecord,
             $data
         ): AttendanceRecord {
+            $date = $data['date'] ?? $attendanceRecord->date;
+
             $attendanceRecord->update([
-                'date' => $data['date'],
+                'date' => $date,
                 'clock_in_at' => $this->createDateTime(
-                    $data['date'],
+                    $date,
                     $data['clock_in']
                 ),
                 'clock_out_at' => isset($data['clock_out'])
                     ? $this->createDateTime(
-                        $data['date'],
+                        $date,
                         $data['clock_out']
                     )
                     : null,
-                'comment' => $data['comment'] ?? null,
+                'comment' => $data['comment'] ?? $attendanceRecord->comment,
             ]);
 
             if (array_key_exists('breaks', $data)) {
                 $this->updateBreakTimes(
                     $attendanceRecord,
-                    $data['date'],
+                    $date,
                     $data['breaks'] ?? []
                 );
             }

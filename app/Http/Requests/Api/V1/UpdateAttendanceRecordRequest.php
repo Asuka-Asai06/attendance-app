@@ -25,7 +25,7 @@ class UpdateAttendanceRecordRequest extends FormRequest
     {
         return [
             'date' => [
-                'required',
+                'sometimes',
                 'date_format:Y-m-d',
                 Rule::unique('attendance_records')
                     ->ignore($this->route('attendance'))
@@ -51,7 +51,6 @@ class UpdateAttendanceRecordRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'date.required' => '勤怠日は必須です。',
             'date.date_format' => '勤怠日は YYYY-MM-DD 形式で指定してください。',
             'date.unique' => 'この日付の勤怠は既に登録されています。',
             'clock_in.required' => '出勤時刻は必須です。',

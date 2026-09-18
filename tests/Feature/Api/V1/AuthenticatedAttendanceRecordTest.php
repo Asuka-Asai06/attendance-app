@@ -265,6 +265,26 @@ class AuthenticatedAttendanceRecordTest extends TestCase
         $response->assertStatus(201);
     }
 
+    public function test_存在しない勤怠idを更新しようとすると404が返る(): void
+    {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        $response = $this->putJson(
+            route(
+                'api.v1.attendance-records.update',
+                99999
+            )
+        );
+
+        $response
+            ->assertStatus(404)
+            ->assertJson([
+                'error' => '勤怠情報が見つかりませんでした。',
+            ]);
+    }
+
     public function test_勤怠を削除できる(): void
     {
         $user = User::factory()->create();

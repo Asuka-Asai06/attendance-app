@@ -37,6 +37,9 @@ Route::middleware(['auth', 'admin'])
         Route::post('/logout', [AdminLogoutController::class, 'logout']);
         Route::get('/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendance.list');
         Route::get('/staff/list', [AdminStaffController::class, 'index'])->name('staff.index');
+        Route::get('/attendance/{attendanceRecord}', function ($attendanceRecord) {
+            return redirect()->route('attendance.show', $attendanceRecord);
+        });
         Route::get('/attendance/staff/{user}', [AdminStaffController::class, 'show'])->name('staff.list');
         Route::post('/attendance/staff/{user}/export', [AdminStaffController::class, 'export'])->name('staff.export');
     });

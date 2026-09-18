@@ -5,19 +5,6 @@
     font-style: normal;
 }
 
-.header {
-    background: #000;
-    max-width: 1540px;
-}
-
-.header__inner {
-    align-items: center;
-    padding: 20px 30px;
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
-
 .inner__group--item {
     color: #fff;
     font-size: 16px;
