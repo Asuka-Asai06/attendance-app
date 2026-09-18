@@ -281,7 +281,7 @@ sail artisan test --coverage
 ### Authentication
 本APIでは、書き込み系エンドポイントの認証にLaravel Sanctumを使用しています。
 
-1. APIトークンを取得する。
+1. APIトークンを取得する。  
 ログインAPIにメールアドレスとパスワードを送信します。
 ```http
 POST /api/login
@@ -300,7 +300,7 @@ Content-Type: application/json
   "token": "..."
 }
 ```
-2. APIトークンを使用する。
+2. APIトークンを使用する。  
 取得したトークンを Authorization ヘッダーに指定します。  
 ```
 Authorization: Bearer {token}
